@@ -137,6 +137,37 @@ public class ClienteImpl implements ClienteService {
         }
     }
 
+    /**
+     * Resuelve (busca o crea) el cliente por RUC dentro de la transacción recibida.
+     * ClienteImpl es el dueño de la tabla public.cliente: cualquier alta de cliente
+     * disparada por otro dominio (p. ej. facturación) debe pasar por acá.
+     * No abre conexión propia: usa la Connection del llamador para respetar su transacción.
+     */
+    @Override
+    public long resolverClienteId(Connection conn, String cliruc, String clinom) throws SQLException {
+        // 1. ¿Ya existe?
+        try (PreparedStatement stmt = conn.prepareStatement("SELECT cliid FROM public.cliente WHERE cliruc = ?")) {
+            stmt.setString(1, cliruc);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return rs.getLong("cliid");
+            }
+        }
+        // 2. No existe: crearlo con lo mínimo (defaults del DDL cubren el resto)
+        try (PreparedStatement stmt = conn.prepareStatement(
+                "INSERT INTO public.cliente(cliruc, clinom, tipo_documento) VALUES (?, ?, ?);",
+                PreparedStatement.RETURN_GENERATED_KEYS)
+        ) {
+            stmt.setString(1, cliruc);
+            stmt.setString(2, clinom);
+            stmt.setInt(3, 9);  // 9 = RUC
+            stmt.execute();
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                rs.next();
+                return rs.getLong("cliid");
+            }
+        }
+    }
+
     // Vincula las 20 columnas de INSERT/UPDATE en orden y devuelve el siguiente índice libre.
     private int bindCliente(PreparedStatement stmt, Cliente c) throws SQLException {
         int i = 1;

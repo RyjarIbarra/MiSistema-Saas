@@ -7,6 +7,7 @@ import com.MiSistema.Modelos.DocumentoDetalle;
 import com.MiSistema.ModelsDto.DefaultResponse;
 import com.MiSistema.ModelsDto.Documento.DocumentoListDto;
 import com.MiSistema.ModelsDto.Filter.DefaultFilter;
+import com.MiSistema.Services.ClienteService;
 import com.MiSistema.Services.DocumentoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,9 @@ public class DocumentoImpl implements DocumentoService {
     private static final String ESTADO_ANULADO = "ANULADO";
 
     private final DataSourceManager dsManager;
+    // El alta/resolución de clientes vive en su propio dominio (ClienteImpl).
+    // Facturación no toca la tabla cliente directamente: la usa por inyección de dependencias.
+    private final ClienteService clienteService;
 
     // ---------- LIST ----------
 
@@ -157,8 +161,10 @@ public class DocumentoImpl implements DocumentoService {
                 }
             }
 
-            // 2.5. Resolver id del cliente por RUC (crear si no existe)
-            long cliid = resolveClienteId(conn, documento.getDocliruc(), documento.getDoclirazon());
+            // 2.5. Resolver id del cliente por RUC (crear si no existe).
+            // Se delega en ClienteService (dueño de la tabla cliente); pasamos la misma
+            // Connection para que participe de esta transacción.
+            long cliid = clienteService.resolverClienteId(conn, documento.getDocliruc(), documento.getDoclirazon());
             documento.setDoccliid(cliid);
 
             // 3. Insertar cabecera
@@ -242,35 +248,6 @@ public class DocumentoImpl implements DocumentoService {
                 stmt.addBatch();
             }
             stmt.executeBatch();
-        }
-    }
-
-    /**
-     * Busca el cliente por RUC. Si existe, devuelve su cliid. Si no existe,
-     * lo crea con el RUC y nombre recibidos (tipo_documento por defecto = 1 = RUC)
-     * dentro de la misma transacción del documento.
-     */
-    private long resolveClienteId(Connection conn, String cliruc, String clinom) throws SQLException {
-        // 1. ¿Ya existe?
-        try (PreparedStatement stmt = conn.prepareStatement("SELECT cliid FROM public.cliente WHERE cliruc = ?")) {
-            stmt.setString(1, cliruc);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) return rs.getLong("cliid");
-            }
-        }
-        // 2. No existe: crearlo con lo mínimo (defaults del DDL cubren el resto)
-        try (PreparedStatement stmt = conn.prepareStatement(
-                "INSERT INTO public.cliente(cliruc, clinom, tipo_documento) VALUES (?, ?, ?);",
-                PreparedStatement.RETURN_GENERATED_KEYS)
-        ) {
-            stmt.setString(1, cliruc);
-            stmt.setString(2, clinom);
-            stmt.setInt(3, 9);  // 9 = RUC
-            stmt.execute();
-            try (ResultSet rs = stmt.getGeneratedKeys()) {
-                rs.next();
-                return rs.getLong("cliid");
-            }
         }
     }
 
