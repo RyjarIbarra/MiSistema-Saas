@@ -1,0 +1,723 @@
+
+
+
+CREATE TABLE IF NOT EXISTS public.tipoprecio (
+	tipid SERIAL,
+	tipnom character varying(250),
+	CONSTRAINT tipoprecio_pkey PRIMARY KEY (tipid),
+	CONSTRAINT tipoprecio_unique_nom UNIQUE (tipnom)
+);
+Insert Into public.tipoprecio(tipnom) values('Casual');
+Insert Into public.tipoprecio(tipnom) values('Cliente');
+Insert Into public.tipoprecio(tipnom) values('Mayorista');
+
+
+
+CREATE TABLE IF NOT EXISTS public.cliente (
+    cliid  SERIAL,
+    cliruc character varying(50)  NOT NULL,
+    clinom character varying(250) ,
+    tipo_documento SMALLINT NOT NULL,
+    clitel character varying(150)  NOT NULL DEFAULT '',
+	climail character varying(250)  NOT NULL DEFAULT '',
+    clidir character varying(150)  NOT NULL DEFAULT '',
+	tipoprecio integer NULL,
+	cliobs character varying(700)  NOT NULL DEFAULT '',
+    clifec timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    -- Tipos SIFEN
+    tipo_operacion            SMALLINT,   -- 1=B2B, 2=B2C, 3=B2G, 4=B2F
+    tipo_contribuyente        SMALLINT,   -- 1=Persona Física, 2=Persona Jurídica
+
+    -- País y ubicación
+    pais_codigo               VARCHAR(10),  -- ISO alfa-3 SIFEN (PRY, ARG, BRA...)
+    pais_descripcion          VARCHAR(100),
+    pais_prefijo              VARCHAR(10),  -- +595, +54, ...
+    departamento_codigo       INTEGER,
+    departamento_descripcion  VARCHAR(100),
+    distrito_codigo           INTEGER,
+    distrito_descripcion      VARCHAR(100),
+    ciudad_codigo             INTEGER,
+    ciudad_descripcion        VARCHAR(100),
+    naturaleza_receptor       SMALLINT,
+
+    CONSTRAINT cliente_pkey PRIMARY KEY (cliid),
+    CONSTRAINT cliente_unique_ruc UNIQUE (cliruc),
+    CONSTRAINT cliente_unique_nom UNIQUE (clinom),
+	CONSTRAINT fk_tipoprecio FOREIGN KEY (tipoprecio) REFERENCES public.tipoprecio(tipid)
+);
+
+
+
+-- =====================================================
+-- TIPO_DOCUMENTO (catálogo)
+-- =====================================================
+CREATE TABLE IF NOT EXISTS public.tipo_documento (
+    tdocodigo    VARCHAR(3)   NOT NULL,
+    tdodescri    VARCHAR(60)  NOT NULL,
+    tdositipo    SMALLINT,
+    tdosetcodigo SMALLINT,
+    tdosigno     SMALLINT     NOT NULL DEFAULT 0,
+    tdotimbrado  BOOLEAN      NOT NULL DEFAULT TRUE,
+    tdolibcompra BOOLEAN      NOT NULL DEFAULT FALSE,
+    tdolibventa  BOOLEAN      NOT NULL DEFAULT FALSE,
+    tdoafectastk BOOLEAN      NOT NULL DEFAULT FALSE,
+    tdorequiere  BOOLEAN      NOT NULL DEFAULT FALSE,
+    tdoorden     SMALLINT     NOT NULL DEFAULT 0,
+    tdoactivo    BOOLEAN      NOT NULL DEFAULT TRUE,
+    CONSTRAINT tipo_documento_pkey   PRIMARY KEY (tdocodigo),
+    CONSTRAINT tipo_documento_descri UNIQUE (tdodescri),
+    CONSTRAINT tipo_documento_sitipo UNIQUE (tdositipo),
+    CONSTRAINT tipo_documento_signo  CHECK (tdosigno IN (-1, 0, 1)),
+    CONSTRAINT tipo_documento_itide  CHECK (tdositipo IS NULL OR tdositipo BETWEEN 1 AND 8)
+);
+
+INSERT INTO public.tipo_documento (tdocodigo, tdodescri, tdositipo, tdosigno, tdotimbrado,
+    tdolibcompra, tdolibventa, tdoafectastk, tdorequiere, tdoorden) VALUES
+    ('FAC','Factura',                       1,  1, TRUE,  TRUE,  TRUE,  TRUE,  FALSE,  10),
+    ('FEX','Factura de exportación',        2,  1, TRUE,  FALSE, TRUE,  TRUE,  FALSE,  20),
+    ('FIM','Factura de importación',        3,  1, TRUE,  TRUE,  FALSE, TRUE,  FALSE,  30),
+    ('AUT','Autofactura',                   4,  1, TRUE,  TRUE,  FALSE, TRUE,  FALSE,  40),
+    ('NCR','Nota de crédito',               5, -1, TRUE,  TRUE,  TRUE,  TRUE,  TRUE,   50),
+    ('NDE','Nota de débito',                6,  1, TRUE,  TRUE,  TRUE,  FALSE, TRUE,   60),
+    ('NRE','Nota de remisión',              7,  0, TRUE,  FALSE, FALSE, TRUE,  FALSE,  70),
+    ('RET','Comprobante de retención',      8,  0, TRUE,  TRUE,  FALSE, FALSE, TRUE,   80),
+    ('BOL','Boleta de venta',            NULL,  1, TRUE,  TRUE,  TRUE,  TRUE,  FALSE,  90),
+    ('TIC','Ticket',                     NULL,  1, TRUE,  TRUE,  FALSE, FALSE, FALSE, 100),
+    ('DES','Despacho de importación',    NULL,  1, FALSE, TRUE,  FALSE, TRUE,  FALSE, 110),
+    ('LIQ','Liquidación de salarios',    NULL,  0, FALSE, TRUE,  FALSE, FALSE, FALSE, 120),
+    ('REC','Recibo de dinero',           NULL,  0, FALSE, FALSE, FALSE, FALSE, FALSE, 130)
+ON CONFLICT (tdocodigo) DO NOTHING;
+
+-- =====================================================
+-- TIMBRADO
+-- =====================================================
+CREATE TABLE IF NOT EXISTS public.timbrado (
+    timid        SERIAL,
+    timtipdoc    VARCHAR(3)  NOT NULL,
+    timnumero    VARCHAR(8)  NOT NULL,
+    timmodalid   CHAR(1)     NOT NULL DEFAULT 'P',
+    timfecini    DATE        NOT NULL,
+    timfecvto    DATE,
+    timestab     CHAR(3)     NOT NULL,
+    timpunexp    CHAR(3)     NOT NULL,
+    timnrodesde  INTEGER,
+    timnrohasta  INTEGER,
+    timnroactual INTEGER     NOT NULL,
+    timactivo    BOOLEAN     NOT NULL DEFAULT TRUE,
+    CONSTRAINT timbrado_pkey   PRIMARY KEY (timid),
+    CONSTRAINT timbrado_tipdoc FOREIGN KEY (timtipdoc) REFERENCES public.tipo_documento (tdocodigo),
+    CONSTRAINT timbrado_unique UNIQUE (timtipdoc, timnumero, timestab, timpunexp),
+    CONSTRAINT timbrado_modalid CHECK (timmodalid IN ('P', 'A', 'E')),
+    CONSTRAINT timbrado_fechas  CHECK (timfecvto IS NULL OR timfecvto >= timfecini),
+    CONSTRAINT timbrado_rango   CHECK (
+        CASE WHEN timmodalid = 'E' THEN
+            timnroactual BETWEEN 1 AND 9999999
+        ELSE
+            timnrodesde IS NOT NULL AND timnrohasta IS NOT NULL
+            AND timnrodesde BETWEEN 1 AND 9999999
+            AND timnrohasta BETWEEN timnrodesde AND 9999999
+            AND timnroactual BETWEEN timnrodesde AND timnrohasta + 1
+        END
+    )
+);
+CREATE UNIQUE INDEX IF NOT EXISTS timbrado_vigente_uq
+    ON public.timbrado (timtipdoc, timestab, timpunexp, timmodalid)
+    WHERE timactivo;
+
+-- =====================================================
+-- DOCUMENTO (cabecera única)
+-- =====================================================
+CREATE TABLE IF NOT EXISTS public.documento (
+    docid          BIGSERIAL,
+    doctipdoc      VARCHAR(3)    NOT NULL,
+    doctimbrado    INTEGER       NOT NULL,
+    docestab       CHAR(3)       NOT NULL,
+    docpunexp      CHAR(3)       NOT NULL,
+    docnumero      INTEGER       NOT NULL,
+    docnrocompleto VARCHAR(15) GENERATED ALWAYS AS (
+        docestab || '-' || docpunexp || '-' || LPAD(docnumero::text, 7, '0')
+    ) STORED,
+    docmodalid     CHAR(1)       NOT NULL,
+    doccontingen   BOOLEAN       NOT NULL DEFAULT FALSE,
+    docfecemi      TIMESTAMPTZ   NOT NULL,
+    docfecvto      DATE,
+    doccliid       BIGINT        NOT NULL,
+    doccajaap      BIGINT,
+    doclirazon     VARCHAR(255)  NOT NULL,
+    docliruc       VARCHAR(11),
+    doclidirec     VARCHAR(255),
+    doccondvta     CHAR(1)       NOT NULL,
+    doccuotas      SMALLINT      NOT NULL DEFAULT 0,
+    docmoneda      CHAR(3)       NOT NULL,
+    doctipcambio   NUMERIC(18,6) NOT NULL DEFAULT 1,
+    docexentas     NUMERIC(18,4) NOT NULL DEFAULT 0,
+    docexoneradas  NUMERIC(18,4) NOT NULL DEFAULT 0,
+    docgravada5    NUMERIC(18,4) NOT NULL DEFAULT 0,
+    docgravada10   NUMERIC(18,4) NOT NULL DEFAULT 0,
+    dociva5        NUMERIC(18,4) NOT NULL DEFAULT 0,
+    dociva10       NUMERIC(18,4) NOT NULL DEFAULT 0,
+    doctotiva      NUMERIC(18,4) NOT NULL DEFAULT 0,
+    doctotdesc     NUMERIC(18,4) NOT NULL DEFAULT 0,
+    doctotal       NUMERIC(18,4) NOT NULL,
+    docestado      VARCHAR(12)   NOT NULL DEFAULT 'EMITIDO',
+    docmotanul     TEXT,
+    docfecanul     TIMESTAMPTZ,
+    docusuanul     INTEGER,
+    docobserva     TEXT,
+    doccreated     TIMESTAMPTZ   NOT NULL DEFAULT NOW(),
+    docupdated     TIMESTAMPTZ   NOT NULL DEFAULT NOW(),
+    docusucrea     INTEGER,
+    CONSTRAINT documento_pkey     PRIMARY KEY (docid),
+    CONSTRAINT documento_tipdoc   FOREIGN KEY (doctipdoc)   REFERENCES public.tipo_documento (tdocodigo),
+    CONSTRAINT documento_timbrado FOREIGN KEY (doctimbrado) REFERENCES public.timbrado (timid),
+    CONSTRAINT documento_cliente  FOREIGN KEY (doccliid)    REFERENCES public.cliente (cliid),
+    CONSTRAINT documento_caja     FOREIGN KEY (docestab, docpunexp) REFERENCES public.caja (cajsucest, cajpuntoexp),
+    CONSTRAINT documento_moneda   FOREIGN KEY (docmoneda)   REFERENCES public.moneda (codigo),
+    CONSTRAINT documento_unique   UNIQUE (doctimbrado, docnumero),
+    CONSTRAINT documento_modalid  CHECK (docmodalid IN ('P', 'A', 'E')),
+    CONSTRAINT documento_estado   CHECK (docestado IN ('EMITIDO', 'ANULADO')),
+    CONSTRAINT documento_numero   CHECK (docnumero BETWEEN 1 AND 9999999),
+    CONSTRAINT documento_conting  CHECK (doccontingen = FALSE OR docmodalid <> 'E'),
+    CONSTRAINT documento_credito  CHECK (
+        (doccondvta = 'C' AND doccuotas = 0)
+     OR (doccondvta = 'R' AND doccuotas >= 1)
+    ),
+    CONSTRAINT documento_anul     CHECK (
+        (docestado = 'ANULADO' AND docfecanul IS NOT NULL AND docmotanul IS NOT NULL)
+     OR (docestado <> 'ANULADO' AND docfecanul IS NULL AND docmotanul IS NULL)
+    )
+);
+CREATE INDEX IF NOT EXISTS idx_doc_cliente    ON public.documento (doccliid);
+CREATE INDEX IF NOT EXISTS idx_doc_fecha      ON public.documento (docfecemi);
+CREATE INDEX IF NOT EXISTS idx_doc_suc_fecha  ON public.documento (docestab, docfecemi);
+CREATE INDEX IF NOT EXISTS idx_doc_nrocomp    ON public.documento (docnrocompleto);
+
+-- =====================================================
+-- DOCUMENTO_DETALLE
+-- =====================================================
+CREATE TABLE IF NOT EXISTS public.documento_detalle (
+    dodid       BIGSERIAL,
+    doddocid    BIGINT        NOT NULL,
+    dodorden    SMALLINT      NOT NULL,
+    dodproid    BIGINT,
+    dodcodigo   VARCHAR(50)   NOT NULL,
+    doddescri   VARCHAR(120)  NOT NULL,
+    dodunimed   SMALLINT,
+    dodcantidad NUMERIC(18,4) NOT NULL,
+    dodpreuni   NUMERIC(18,4) NOT NULL,
+    doddescuni  NUMERIC(18,4) NOT NULL DEFAULT 0,
+    dodafectiva SMALLINT      NOT NULL,
+    dodtasaiva  SMALLINT      NOT NULL,
+    dodpropiva  NUMERIC(5,2)  NOT NULL DEFAULT 100,
+    dodbaseimp  NUMERIC(18,4) NOT NULL,
+    dodmontoiva NUMERIC(18,4) NOT NULL,
+    dodsubtotal NUMERIC(18,4) NOT NULL,
+    dodlote     VARCHAR(50),
+    dodfecvto   DATE,
+    CONSTRAINT documento_detalle_pkey  PRIMARY KEY (dodid),
+    CONSTRAINT documento_detalle_doc   FOREIGN KEY (doddocid) REFERENCES public.documento (docid) ON DELETE CASCADE,
+    CONSTRAINT documento_detalle_prod  FOREIGN KEY (dodproid) REFERENCES public.producto (proid),
+    CONSTRAINT documento_detalle_orden UNIQUE (doddocid, dodorden),
+    CONSTRAINT documento_detalle_cant  CHECK (dodcantidad > 0),
+    CONSTRAINT documento_detalle_prec  CHECK (dodpreuni >= 0),
+    CONSTRAINT documento_detalle_desc  CHECK (doddescuni >= 0 AND doddescuni <= dodpreuni),
+    CONSTRAINT documento_detalle_iva   CHECK (
+        (dodafectiva IN (2, 3) AND dodtasaiva = 0        AND dodpropiva = 0)
+     OR (dodafectiva = 1       AND dodtasaiva IN (5, 10) AND dodpropiva = 100)
+     OR (dodafectiva = 4       AND dodtasaiva IN (5, 10) AND dodpropiva > 0 AND dodpropiva < 100)
+    )
+);
+CREATE INDEX IF NOT EXISTS idx_dod_documento ON public.documento_detalle (doddocid);
+
+-- =====================================================
+-- FUNCIÓN: reserva del próximo número correlativo
+-- =====================================================
+CREATE OR REPLACE FUNCTION public.fn_timbrado_siguiente_numero(p_timid INTEGER)
+RETURNS INTEGER
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_numero INTEGER;
+BEGIN
+    UPDATE public.timbrado
+       SET timnroactual = timnroactual + 1
+     WHERE timid = p_timid
+       AND timactivo
+       AND (timfecvto IS NULL OR timfecvto >= CURRENT_DATE)
+    RETURNING timnroactual - 1 INTO v_numero;
+
+    IF v_numero IS NULL THEN
+        RAISE EXCEPTION 'Timbrado % inexistente, inactivo o vencido', p_timid
+            USING ERRCODE = 'check_violation';
+    END IF;
+
+    RETURN v_numero;
+END;
+$$;
+
+
+
+CREATE TABLE IF NOT EXISTS public.moneda (
+	codigo      character varying(3)  PRIMARY KEY, -- PYG, USD, EUR
+	descripcion character varying(50)  NOT NULL,
+	simbolo     character varying(5),
+	decimales   SMALLINT DEFAULT 2,
+	activo      BOOLEAN DEFAULT TRUE
+);
+INSERT INTO public.moneda (codigo, descripcion, simbolo, decimales) values ('PYG', 'Guarani', 'Gs', 0);
+
+
+
+CREATE TABLE IF NOT EXISTS public.sucursal (
+	sucest CHAR(3) NOT NULL,
+	sucnom character varying(250)  NOT NULL,
+	sucdir character varying(250)  NOT NULL DEFAULT '',
+	suctel character varying(250)  NOT NULL DEFAULT '',
+	CONSTRAINT sucursal_pkey       PRIMARY KEY (sucest),
+	CONSTRAINT sucursal_unique_nom UNIQUE (sucnom)
+);
+INSERT INTO public.sucursal (sucest, sucnom) values ('001', 'Casa Central');
+
+
+
+CREATE TABLE IF NOT EXISTS unidad_medida (
+	codigo      VARCHAR(10) PRIMARY KEY,
+	descripcion VARCHAR(50) NOT NULL,    -- Ej: Kilogramos, Litros, Unidades
+	abreviatura VARCHAR(10)              -- Ej: Kg, Lts, Uni
+);
+insert into unidad_medida (codigo, descripcion, abreviatura) values ('UNI', 'Unidad', 'Uni.');
+insert into unidad_medida (codigo, descripcion, abreviatura) values ('KG', 'Kilogramo', 'Kg.');
+insert into unidad_medida (codigo, descripcion, abreviatura) values ('LT', 'Litro', 'Lt.');
+insert into unidad_medida (codigo, descripcion, abreviatura) values ('SERV', 'Servicio', 'Serv.');
+
+
+
+CREATE TABLE IF NOT EXISTS origen (
+	id_origen VARCHAR(10) NOT NULL, -- Ej: FV, FC, AJ
+	descripcion VARCHAR(50) NOT NULL,
+	CONSTRAINT origen_pkey PRIMARY KEY (id_origen),
+	CONSTRAINT origen_unique_key UNIQUE (descripcion)
+);
+insert into origen (descripcion, id_origen) values ('Creación de Producto (Entrada Inicial)', 'EI');
+insert into origen (descripcion, id_origen) values ('Facturación Venta', 'FV');
+insert into origen (descripcion, id_origen) values ('Facturación Compra', 'FC');
+insert into origen (descripcion, id_origen) values ('Corrección manual de inventario (AJUSTE)', 'AJ');
+insert into origen (descripcion, id_origen) values ('Movimiento entre depósitos', 'MD');
+
+
+
+CREATE TABLE IF NOT EXISTS public.deposito (
+    depid SERIAL,
+    depnom character varying(250)  NOT NULL,
+    depdir character varying(250)  NOT NULL DEFAULT ''::character varying,
+    deptel character varying(250)  NOT NULL DEFAULT ''::character varying,
+    CONSTRAINT deposito_pkey PRIMARY KEY (depid),
+    CONSTRAINT deposito_unique_key UNIQUE (depnom)
+);
+insert into public.deposito (depnom) values ('Deposito - Casa Central');
+
+
+
+CREATE TABLE IF NOT EXISTS public.familia (
+    fam_id   SERIAL,
+    fam_nom  VARCHAR(100) NOT NULL,
+    fam_desc VARCHAR(250) NULL,
+    CONSTRAINT familia_pkey PRIMARY KEY (fam_id),
+    CONSTRAINT familia_unique UNIQUE (fam_nom)
+);
+
+CREATE TABLE IF NOT EXISTS public.categoria (
+    cat_id   SERIAL,
+    cat_nom  VARCHAR(100) NOT NULL,
+    cat_desc VARCHAR(250) NULL,
+    fam_id   INTEGER,
+    CONSTRAINT categoria_pkey PRIMARY KEY (cat_id),
+    CONSTRAINT categoria_unique UNIQUE (cat_nom),
+    CONSTRAINT fk_categoria_familia FOREIGN KEY (fam_id) REFERENCES public.familia (fam_id)
+);
+
+
+CREATE TABLE IF NOT EXISTS public.marca (
+    mar_id   SERIAL,
+    mar_nom  VARCHAR(250) NOT NULL,
+    mar_desc VARCHAR(250) NOT NULL,
+    CONSTRAINT marca_pkey PRIMARY KEY (mar_id),
+    CONSTRAINT marca_unique UNIQUE (mar_nom)
+);
+
+CREATE TABLE IF NOT EXISTS public.ubicacion (
+    ubi_id         SERIAL,
+    ubi_codigo     VARCHAR(100) NULL,
+    ubi_ubicacion  VARCHAR(250) NOT NULL,
+    ubi_referencia VARCHAR(250) NOT NULL,
+    CONSTRAINT ubicacion_pkey PRIMARY KEY (ubi_id),
+    CONSTRAINT ubi_cod_unique UNIQUE (ubi_codigo),
+    CONSTRAINT ubi_ubi_unique UNIQUE (ubi_ubicacion)
+);
+
+CREATE TABLE IF NOT EXISTS public.producto (
+    proid                   SERIAL,
+
+    -- Identificación
+    gtin                    VARCHAR(14),                            -- dGtin
+    gtin_paquete            VARCHAR(14),                            -- dGtinPq
+    prodesc                 VARCHAR(700) NOT NULL,                  -- dDesProSer
+
+    -- Tipo y clasificación
+    tipo_producto           SMALLINT NOT NULL DEFAULT 1,            -- 1=Producto, 2=Servicio
+    unidad                  VARCHAR(10) NOT NULL,                   -- cUniMed (FK a unidad_medida.codigo)
+    categoria               INTEGER,
+    marca                   INTEGER,
+    ubicacion               INTEGER,
+
+    -- Tributario IVA (obligatorio SIFEN)
+    afectacion_iva          SMALLINT NOT NULL DEFAULT 1,            -- iAfecIVA
+    tasa_iva                NUMERIC(5,2) NOT NULL DEFAULT 10,       -- dTasaIVA
+    proporcion_iva          NUMERIC(5,2) NOT NULL DEFAULT 100,      -- dPropIVA
+
+    -- Tributario ISC (opcional)
+    aplica_isc              BOOLEAN NOT NULL DEFAULT FALSE,
+    tasa_isc                NUMERIC(5,2),
+    proporcion_isc          NUMERIC(5,2),
+
+    -- Importados / Mercosur
+    ncm                     VARCHAR(8),                             -- dNCM
+    partida_arancelaria     VARCHAR(20),                            -- dParAranc
+    pais_origen             VARCHAR(3) DEFAULT 'PRY',               -- cPaisOrig
+
+    -- B2G (Contrataciones públicas)
+    dncp_nivel_general      VARCHAR(8),                             -- dDncpG
+    dncp_nivel_especifico   VARCHAR(4),                             -- dDncpE
+
+    -- Control operacional
+    ctrlstock               BOOLEAN NOT NULL DEFAULT TRUE,
+    moddesc                 BOOLEAN NOT NULL DEFAULT TRUE,
+    modprec                 BOOLEAN NOT NULL DEFAULT TRUE,
+    stocknegativo           BOOLEAN NOT NULL DEFAULT FALSE,
+    activo                  BOOLEAN NOT NULL DEFAULT TRUE,          -- soft delete
+    proobs                  VARCHAR(700) NOT NULL DEFAULT '',
+    f_registro              TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    -- Constraints
+    CONSTRAINT producto_pkey PRIMARY KEY (proid),
+    CONSTRAINT producto_unique_gtin UNIQUE (gtin),
+    CONSTRAINT producto_unique_descripcion UNIQUE (prodesc),
+    CONSTRAINT chk_afectacion_iva CHECK (afectacion_iva IN (1, 2, 3, 4)),
+    CONSTRAINT chk_tasa_iva CHECK (tasa_iva IN (0, 5, 10)),
+    CONSTRAINT chk_proporcion_iva CHECK (proporcion_iva BETWEEN 0 AND 100),
+    CONSTRAINT chk_tipo_producto CHECK (tipo_producto IN (1, 2)),
+    CONSTRAINT chk_iva_coherente CHECK (
+        (afectacion_iva IN (2, 3) AND tasa_iva = 0) OR
+        (afectacion_iva IN (1, 4) AND tasa_iva IN (5, 10))
+    ),
+
+    -- FKs
+    CONSTRAINT fk_producto_unidad    FOREIGN KEY (unidad)    REFERENCES public.unidad_medida (codigo),
+    CONSTRAINT fk_producto_categoria FOREIGN KEY (categoria) REFERENCES public.categoria (cat_id),
+    CONSTRAINT fk_producto_marca     FOREIGN KEY (marca)     REFERENCES public.marca (mar_id),
+    CONSTRAINT fk_producto_ubicacion FOREIGN KEY (ubicacion) REFERENCES public.ubicacion (ubi_id)
+);
+
+CREATE TABLE IF NOT EXISTS public.precio_producto (
+    id_producto integer NOT NULL,
+    tipo integer NOT NULL,
+    moneda character varying(50) NOT NULL default 'PYG',
+    precio numeric(12,3) NOT NULL,
+    estado boolean NOT NULL DEFAULT TRUE,
+    CONSTRAINT precio_pkey PRIMARY KEY (id_producto, tipo),
+    CONSTRAINT fk_producto FOREIGN KEY (id_producto) REFERENCES public.producto (proid) ON DELETE CASCADE,
+    CONSTRAINT fk_tipo FOREIGN KEY (tipo) REFERENCES public.tipoprecio (tipid),
+    CONSTRAINT fk_moneda FOREIGN KEY (moneda) REFERENCES public.moneda (codigo)
+);
+Insert Into public.producto (prodesc, unidad) values ('Producto Prueba 01', 'UNI');
+Insert Into public.producto (prodesc, unidad) values ('Producto Prueba 02', 'UNI');
+
+
+-------------*** Crea una lista de valores para el campo tipo_movimiento de la tabla movimientos_stock ***-------------
+CREATE TYPE public.tipo_movimiento_enum AS ENUM ('ENTRADA', 'SALIDA');
+
+CREATE TABLE IF NOT EXISTS public.movimientostock (
+    id_movimiento SERIAL,
+    id_producto integer NOT NULL,
+    id_deposito integer NOT NULL,
+    origen_movimiento character varying(10)  NOT NULL,
+    tipo_movimiento tipo_movimiento_enum NOT NULL,
+    cantidad numeric(12,3) NOT NULL,
+    id_referencia character varying(50) ,
+    documento_referencia character varying(50) ,
+    fecha_movimiento timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    observaciones text ,
+    CONSTRAINT movimientos_stock_pkey PRIMARY KEY (id_movimiento),
+    CONSTRAINT fk_deposito FOREIGN KEY (id_deposito) REFERENCES public.deposito (depid),
+    CONSTRAINT fk_origen FOREIGN KEY (origen_movimiento) REFERENCES public.origen (id_origen),
+    CONSTRAINT fk_producto FOREIGN KEY (id_producto) REFERENCES public.producto (proid) ON DELETE CASCADE,
+    CONSTRAINT cantidad_positiva CHECK (cantidad > 0::numeric)
+);
+
+-------------*** Crea la funcion fn_actualizar_stock_v1() ***-------------
+
+CREATE OR REPLACE FUNCTION public.fn_actualizar_stock_v1()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+DECLARE
+    v_permite_negativo boolean;
+    v_stock_actual numeric(12,3);
+BEGIN
+
+	    IF NEW.tipo_movimiento = 'ENTRADA' THEN
+	        -- Sumar stock (UPSERT)
+	        INSERT INTO stock (id_producto, id_deposito, cantidad)
+	        VALUES (NEW.id_producto, NEW.id_deposito, NEW.cantidad)
+	        ON CONFLICT (id_producto, id_deposito)
+	        DO UPDATE SET cantidad = stock.cantidad + NEW.cantidad;
+
+	    ELSIF NEW.tipo_movimiento = 'SALIDA' THEN
+
+	        -- 1. Consultar la configuración del producto y el stock actual
+	        -- Nota: Asumo que tu tabla de productos se llama 'producto' según tu descripción
+	        SELECT stocknegativo INTO v_permite_negativo
+	        FROM public.producto
+	        WHERE proid = NEW.id_producto; -- Ajusta el nombre del campo ID si es diferente (ej: prodid)
+
+	        -- 2. Obtener el stock actual disponible en ese depósito
+	        SELECT cantidad INTO v_stock_actual
+	        FROM public.stock
+	        WHERE id_producto = NEW.id_producto AND id_deposito = NEW.id_deposito;
+
+	        -- Si no existe el registro en la tabla stock, tratamos el stock actual como 0
+	        IF v_stock_actual IS NULL THEN
+	            v_stock_actual := 0;
+	        END IF;
+
+	        -- 3. Validar si se permite stock negativo
+	        -- Si NO permite negativo (FALSE) y la resta daría menor a cero, lanzamos error
+	        IF NOT v_permite_negativo AND (v_stock_actual - NEW.cantidad) < 0 THEN
+	            RAISE EXCEPTION 'Stock insuficiente para el producto (ID: %). Stock actual: %, Solicitado: %. El producto no permite stock negativo.',
+	            NEW.id_producto, v_stock_actual, NEW.cantidad;
+	        END IF;
+
+	        -- 4. Si pasó la validación o si permite negativos, procedemos a restar
+	        UPDATE stock
+	        SET cantidad = cantidad - NEW.cantidad
+	        WHERE id_producto = NEW.id_producto
+	          AND id_deposito = NEW.id_deposito;
+
+	        -- Validación de existencia del registro en la tabla stock
+	        IF NOT FOUND THEN
+	             -- Si no existe registro y permite negativo, deberíamos insertarlo con valor negativo
+	             -- IF v_permite_negativo THEN
+	                -- INSERT INTO stock (id_producto, id_deposito, cantidad)
+	                -- VALUES (NEW.id_producto, NEW.id_deposito, -NEW.cantidad);
+	             -- ELSE
+	                RAISE EXCEPTION 'No hay registro de stock para el producto % en el depósito %', NEW.id_producto, NEW.id_deposito;
+	             -- END IF;
+	        END IF;
+
+	    END IF; --- Fin entrada/salida
+
+    RETURN NEW;
+END;
+$BODY$;
+
+-------------*** Crea el trigger que ejecuta la funcion ***-------------
+
+CREATE OR REPLACE TRIGGER tr_despues_de_movimiento_v1
+AFTER INSERT ON public.movimientostock
+FOR EACH ROW
+EXECUTE FUNCTION public.fn_actualizar_stock_v1();
+
+
+-------------*** Crea tabla Stock ***-------------
+
+CREATE TABLE IF NOT EXISTS public.stock (
+    id_producto integer NOT NULL,
+    id_deposito integer NOT NULL,
+    cantidad numeric(12,3) DEFAULT 0.000,
+    CONSTRAINT stock_pkey PRIMARY KEY (id_producto, id_deposito),
+    CONSTRAINT stock_id_deposito_fkey FOREIGN KEY (id_deposito) REFERENCES public.deposito (depid),
+    CONSTRAINT stock_id_producto_fkey FOREIGN KEY (id_producto) REFERENCES public.producto (proid) ON DELETE CASCADE
+);
+
+
+-------------*** Crea Vista v_stock_detallado ***-------------
+
+CREATE VIEW public.v_stock_detallado AS
+SELECT
+    p.proid,
+    p.prodesc AS producto,
+    CASE
+        WHEN u.descripcion = 'Servicio' THEN 'N/A'::varchar(250)
+        ELSE COALESCE(d.depid::text || ' - ' || d.depnom, 'Sin Depósito')::varchar(250)
+    END AS deposito,
+    COALESCE(s.cantidad, 0) AS cantidad,
+    u.descripcion AS unidad,
+    CASE
+        WHEN u.descripcion = 'Servicio' THEN 'N/A (Servicio)'
+        ELSE concat(
+            trim(trailing '.' from trim(trailing '0' from COALESCE(s.cantidad, 0)::text)),
+            ' ',
+            u.abreviatura
+        )
+    END AS stock_formateado
+FROM producto p
+JOIN unidad_medida u ON p.unidad = u.codigo
+LEFT JOIN stock s ON p.proid = s.id_producto
+LEFT JOIN deposito d ON s.id_deposito = d.depid
+WHERE s.id_producto IS NOT NULL OR u.descripcion = 'Servicio'
+order by p.prodesc;
+
+
+
+-- =====================================================
+-- EMPRESA (configuración principal)
+-- =====================================================
+CREATE TABLE IF NOT EXISTS public.empresa_configuracion (
+    id                          BIGSERIAL PRIMARY KEY,
+
+    -- Datos fiscales
+    ruc                         VARCHAR(20) NOT NULL UNIQUE,
+    dv_ruc                      VARCHAR(2) NOT NULL,
+    razon_social                VARCHAR(255) NOT NULL,
+    nombre_fantasia             VARCHAR(255),
+    tipo_contribuyente          SMALLINT NOT NULL, -- 1=Física, 2=Jurídica
+    tipo_regimen                SMALLINT,
+
+    -- Domicilio
+    direccion                   VARCHAR(255) NOT NULL,
+    numero_casa                 VARCHAR(20),
+    departamento_codigo         INTEGER NOT NULL,
+    departamento_descripcion    VARCHAR(100) NOT NULL,
+    distrito_codigo             INTEGER NOT NULL,
+    distrito_descripcion        VARCHAR(100) NOT NULL,
+    ciudad_codigo               INTEGER NOT NULL,
+    ciudad_descripcion          VARCHAR(100) NOT NULL,
+
+    -- Contacto
+    telefono                    VARCHAR(50),
+    email                       VARCHAR(150),
+    sitio_web                   VARCHAR(255),
+
+    -- Logo
+    logo_ruta                   VARCHAR(500),
+
+    -- FACTURACIÓN ELECTRÓNICA (puede o no)
+    es_facturador_electronico   BOOLEAN NOT NULL DEFAULT FALSE,
+    ambiente_sifen              VARCHAR(10), -- TEST | PROD (NULL si no factura electrónicamente)
+    codigo_seguridad_contribuyente VARCHAR(50), -- CSC otorgado por DNIT
+
+    -- Configuración tributaria básica
+    moneda_default              VARCHAR(3) DEFAULT 'PYG',
+    iva_incluido_default        BOOLEAN DEFAULT TRUE,
+    tipo_transaccion            SMALLINT,
+    tipo_impuesto               SMALLINT,
+
+    -- Control
+    estado                      VARCHAR(20) NOT NULL DEFAULT 'ACTIVO',
+    fecha_inicio_actividades    DATE,
+
+    -- Auditoría
+    created_at                  TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updated_at                  TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT chk_ambiente CHECK (ambiente_sifen IS NULL OR ambiente_sifen IN ('TEST', 'PROD')),
+    CONSTRAINT chk_estado CHECK (estado IN ('ACTIVO', 'INACTIVO', 'SUSPENDIDO')),
+    CONSTRAINT chk_tipo_contribuyente CHECK (tipo_contribuyente IN (1, 2))
+);
+
+-- =====================================================
+-- ACTIVIDADES ECONÓMICAS (una empresa por base / tenant)
+-- =====================================================
+CREATE TABLE IF NOT EXISTS public.empresa_actividad_economica (
+    codigo          VARCHAR(20) NOT NULL,
+    descripcion     VARCHAR(255) NOT NULL,
+    es_principal    BOOLEAN DEFAULT FALSE,
+
+    CONSTRAINT uq_empresa_actividad UNIQUE (codigo)
+);
+
+-- =====================================================
+-- OBLIGACIONES (una empresa por base / tenant)
+-- =====================================================
+CREATE TABLE IF NOT EXISTS public.empresa_obligacion (
+    codigo          VARCHAR(20) NOT NULL,
+    descripcion     VARCHAR(255) NOT NULL,
+
+    CONSTRAINT uq_empresa_obligacion UNIQUE (codigo)
+);
+
+
+
+-- =====================================================
+-- NIVELES DE ACCESO
+-- =====================================================
+CREATE TABLE IF NOT EXISTS public.access (
+    id          BIGSERIAL PRIMARY KEY,
+    name        VARCHAR(120) NOT NULL UNIQUE,
+    description VARCHAR(255),
+    active      BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_access_active ON public.access(active);
+
+CREATE TABLE IF NOT EXISTS public.access_level (
+    id           BIGSERIAL PRIMARY KEY,
+    access_id    BIGINT       NOT NULL REFERENCES public.access(id) ON DELETE CASCADE,
+    module_key   VARCHAR(20)  NOT NULL,
+    module_name  VARCHAR(100) NOT NULL,
+    option_name  VARCHAR(150) NOT NULL,
+    can_view     BOOLEAN      NOT NULL DEFAULT FALSE,
+    can_create   BOOLEAN      NOT NULL DEFAULT FALSE,
+    can_update   BOOLEAN      NOT NULL DEFAULT FALSE,
+    can_delete   BOOLEAN      NOT NULL DEFAULT FALSE,
+    created_at   TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at   TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uq_access_module_key UNIQUE (access_id, module_key)
+);
+
+CREATE INDEX IF NOT EXISTS idx_access_level_access_id  ON public.access_level(access_id);
+CREATE INDEX IF NOT EXISTS idx_access_level_module_key ON public.access_level(module_key);
+
+
+
+-- =====================================================
+-- PROVEEDOR
+-- =====================================================
+CREATE TABLE IF NOT EXISTS public.proveedor (
+    prvid          BIGSERIAL,
+
+    -- Identificación
+    prvrazon       VARCHAR(255) NOT NULL,             -- Razón social o nombre completo
+    prvruc         VARCHAR(25)  NOT NULL,             -- RUC con dígito verificador
+    prv_contrib    SMALLINT     NOT NULL,             -- 1 física, 2 jurídica
+    prv_naturaleza SMALLINT     NOT NULL,             -- 1 Contribuyente, 2 No Contribuyente
+    tipo_documento SMALLINT,                          -- Tipo de documento
+
+    -- Contacto
+    prvtelefono    VARCHAR(30),
+    prvemail       VARCHAR(120),
+    prvcontacto    VARCHAR(120),
+
+    -- Estado y auditoría
+    prvobserva     TEXT,
+    prvcreated     TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+
+    CONSTRAINT proveedor_pkey                PRIMARY KEY (prvid),
+    CONSTRAINT proveedor_ruc                 UNIQUE (prvruc),
+    CONSTRAINT proveedor_contrib             CHECK (prv_contrib IN (1, 2)),
+    CONSTRAINT proveedor_naturaleza          CHECK (prv_naturaleza IN (1, 2)),
+    CONSTRAINT proveedor_contrib_naturaleza  CHECK (
+        (prv_naturaleza = 1 AND prv_contrib IN (1, 2))
+     OR (prv_naturaleza = 2 AND prv_contrib = 1)
+    ),
+    CONSTRAINT chk_prvruc CHECK (
+        (tipo_documento = 9 AND RIGHT(TRIM(prvruc), 2) LIKE '-_')
+     OR (tipo_documento = 1 AND TRIM(prvruc) ~ '^[0-9]+$')
+     OR (tipo_documento IN (2, 3, 4, 5, 6))
+    )
+);

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport name="producto_stock" language="java" pageWidth="595" pageHeight="842"
+              whenNoDataType="AllSectionsNoDetail" columnWidth="555"
+              leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20"
+              uuid="d0000000-0000-0000-0000-000000000000">
+
+    <parameter name="filtroTexto" forPrompting="false" class="java.lang.String">
+        <defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+    </parameter>
+    <parameter name="filtroActivo" forPrompting="false" class="java.lang.Boolean">
+        <defaultValueExpression><![CDATA[null]]></defaultValueExpression>
+    </parameter>
+    <parameter name="filtroDeposito" forPrompting="false" class="java.lang.Long">
+        <defaultValueExpression><![CDATA[null]]></defaultValueExpression>
+    </parameter>
+
+    <field name="proid" class="java.lang.Long"/>
+    <field name="gtin" class="java.lang.String"/>
+    <field name="prodesc" class="java.lang.String"/>
+    <field name="deposito" class="java.lang.String"/>
+    <field name="cantidad" class="java.lang.Double"/>
+    <field name="unidad" class="java.lang.String"/>
+    <field name="stockFormateado" class="java.lang.String"/>
+
+    <title height="60">
+        <element kind="staticText" uuid="d0000000-0000-0000-0000-000000000001"
+                 x="0" y="0" width="555" height="30" fontSize="18.0" bold="true" hTextAlign="Center">
+            <text><![CDATA[Listado de Stock de Productos]]></text>
+        </element>
+        <element kind="textField" uuid="d0000000-0000-0000-0000-000000000002"
+                 x="0" y="35" width="555" height="15" fontSize="9.0" italic="true"
+                 blankWhenNull="true" hTextAlign="Center">
+            <expression><![CDATA[
+                "Filtros:" +
+                ($P{filtroTexto} == null || $P{filtroTexto}.isEmpty() ? " (sin busqueda)" : " busqueda='" + $P{filtroTexto} + "'") +
+                " | Activo=" + ($P{filtroActivo} == null ? "todos" : ($P{filtroActivo} ? "solo activos" : "solo inactivos")) +
+                " | Deposito=" + ($P{filtroDeposito} == null ? "todos" : $P{filtroDeposito}.toString())
+            ]]></expression>
+        </element>
+    </title>
+
+    <columnHeader height="22">
+        <element kind="line" uuid="d0000000-0000-0000-0000-000000000010"
+                 x="0" y="21" width="555" height="1"/>
+        <element kind="staticText" uuid="d0000000-0000-0000-0000-000000000011"
+                 x="0" y="2" width="40" height="18" bold="true">
+            <text><![CDATA[ID]]></text>
+        </element>
+        <element kind="staticText" uuid="d0000000-0000-0000-0000-000000000012"
+                 x="40" y="2" width="90" height="18" bold="true">
+            <text><![CDATA[GTIN]]></text>
+        </element>
+        <element kind="staticText" uuid="d0000000-0000-0000-0000-000000000013"
+                 x="130" y="2" width="200" height="18" bold="true">
+            <text><![CDATA[Descripcion]]></text>
+        </element>
+        <element kind="staticText" uuid="d0000000-0000-0000-0000-000000000014"
+                 x="330" y="2" width="130" height="18" bold="true">
+            <text><![CDATA[Deposito]]></text>
+        </element>
+        <element kind="staticText" uuid="d0000000-0000-0000-0000-000000000015"
+                 x="460" y="2" width="95" height="18" bold="true" hTextAlign="Right">
+            <text><![CDATA[Stock]]></text>
+        </element>
+    </columnHeader>
+
+    <detail>
+        <band height="18">
+            <element kind="textField" uuid="d0000000-0000-0000-0000-000000000020"
+                     x="0" y="0" width="40" height="18">
+                <expression><![CDATA[$F{proid}]]></expression>
+            </element>
+            <element kind="textField" uuid="d0000000-0000-0000-0000-000000000021"
+                     x="40" y="0" width="90" height="18" blankWhenNull="true">
+                <expression><![CDATA[$F{gtin}]]></expression>
+            </element>
+            <element kind="textField" uuid="d0000000-0000-0000-0000-000000000022"
+                     x="130" y="0" width="200" height="18" blankWhenNull="true">
+                <expression><![CDATA[$F{prodesc}]]></expression>
+            </element>
+            <element kind="textField" uuid="d0000000-0000-0000-0000-000000000023"
+                     x="330" y="0" width="130" height="18" blankWhenNull="true">
+                <expression><![CDATA[$F{deposito}]]></expression>
+            </element>
+            <element kind="textField" uuid="d0000000-0000-0000-0000-000000000024"
+                     x="460" y="0" width="95" height="18" blankWhenNull="true" hTextAlign="Right">
+                <expression><![CDATA[$F{stockFormateado}]]></expression>
+            </element>
+        </band>
+    </detail>
+
+    <pageFooter height="20">
+        <element kind="line" uuid="d0000000-0000-0000-0000-000000000030"
+                 x="0" y="0" width="555" height="1"/>
+        <element kind="textField" uuid="d0000000-0000-0000-0000-000000000031"
+                 x="0" y="4" width="277" height="15" fontSize="8.0">
+            <expression><![CDATA["Generado: " + new java.util.Date()]]></expression>
+        </element>
+        <element kind="textField" uuid="d0000000-0000-0000-0000-000000000032"
+                 x="278" y="4" width="277" height="15" fontSize="8.0" hTextAlign="Right">
+            <expression><![CDATA["Pagina " + $V{PAGE_NUMBER}]]></expression>
+        </element>
+    </pageFooter>
+
+    <noData height="30">
+        <element kind="staticText" uuid="d0000000-0000-0000-0000-000000000040"
+                 x="0" y="10" width="555" height="20" italic="true" hTextAlign="Center">
+            <text><![CDATA[Sin stock de productos para los filtros seleccionados.]]></text>
+        </element>
+    </noData>
+</jasperReport>

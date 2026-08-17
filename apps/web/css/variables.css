@@ -1,0 +1,12 @@
+:root {
+  --color-principal: #38a169;
+
+  --gradient-principal: linear-gradient(180deg, #48bb78 0%, #38a169 100%);
+  --gradient-sidebar: linear-gradient(180deg, #48bb78 0%, #38a169 100%);
+
+--color-tabla-fila-muy-suave: rgba(56, 161, 105, 0.03);
+--color-tabla-fila-suave: rgba(56, 161, 105, 0.06);
+--color-tabla-fila-medio: rgba(56, 161, 105, 0.10);
+}
+/* color original c200bb */
+/* linear-gradient(180deg, #667eea 0%, #764ba2 100%); */

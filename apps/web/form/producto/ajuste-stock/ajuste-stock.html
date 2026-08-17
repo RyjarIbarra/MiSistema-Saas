@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../../../assets/favicon.png" type="image/png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="../../../css/style.css">
+    <title>Ajuste de Stock - Mi Sistema</title>
+    <style>
+        .ajuste-table-container {
+            overflow-x: auto;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .ajuste-table-container::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+            display: none;
+        }
+
+        .ajuste-table-container table {
+            min-width: 940px;
+        }
+
+        .ajuste-empty {
+            display: grid;
+            place-items: center;
+            min-height: 260px;
+            color: #718096;
+            text-align: center;
+            padding: 28px;
+        }
+
+        .ajuste-empty i {
+            color: var(--color-principal);
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .ajuste-modal-content {
+            width: 90vw;
+            height: 90vh;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .ajuste-modal-body {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow: hidden;
+        }
+
+        .ajuste-section {
+            background: #fff;
+            border: 1px solid #e8edf3;
+            border-radius: 10px;
+        }
+
+        .ajuste-section-body {
+            padding: 14px 16px;
+        }
+
+        .ajuste-detalle-body {
+            height: 100%;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ajuste-detail-form {
+            display: grid;
+            grid-template-columns: minmax(110px, 0.7fr) minmax(220px, 1.7fr) minmax(150px, 0.9fr) minmax(110px, 0.8fr) minmax(130px, 0.85fr) auto;
+            gap: 12px;
+            align-items: end;
+        }
+
+        .ajuste-detalle-tabla {
+            flex: 1;
+            min-height: 0;
+            max-height: 100%;
+            overflow: hidden;
+        }
+
+        .ajuste-detalle-tabla table {
+            width: 100%;
+            min-width: 940px;
+            table-layout: fixed;
+        }
+
+        .ajuste-detalle-tabla thead,
+        .ajuste-detalle-tabla tbody {
+            display: block;
+        }
+
+        .ajuste-detalle-tabla thead {
+            padding-right: 8px;
+        }
+
+        .ajuste-detalle-tabla tbody {
+            max-height: 100%;
+            overflow-y: auto;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .ajuste-detalle-tabla tbody::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+            display: none;
+        }
+
+        .ajuste-detalle-tabla thead tr,
+        .ajuste-detalle-tabla tbody tr {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        .ajuste-detalle-tabla tbody td {
+            vertical-align: middle;
+        }
+
+        .ajuste-detalle-tabla thead th:nth-child(1),
+        .ajuste-detalle-tabla tbody td:nth-child(1) {
+            width: 12%;
+        }
+
+        .ajuste-detalle-tabla thead th:nth-child(2),
+        .ajuste-detalle-tabla tbody td:nth-child(2) {
+            width: 29%;
+        }
+
+        .ajuste-detalle-tabla thead th:nth-child(3),
+        .ajuste-detalle-tabla tbody td:nth-child(3) {
+            width: 12%;
+        }
+
+        .ajuste-detalle-tabla thead th:nth-child(4),
+        .ajuste-detalle-tabla tbody td:nth-child(4) {
+            width: 13%;
+        }
+
+        .ajuste-detalle-tabla thead th:nth-child(5),
+        .ajuste-detalle-tabla tbody td:nth-child(5) {
+            width: 11%;
+        }
+
+        .ajuste-detalle-tabla thead th:nth-child(6),
+        .ajuste-detalle-tabla tbody td:nth-child(6) {
+            width: 15%;
+        }
+
+        .ajuste-detalle-tabla thead th:nth-child(7),
+        .ajuste-detalle-tabla tbody td:nth-child(7) {
+            width: 8%;
+        }
+
+        .badge-movimiento {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .badge-movimiento.descuento {
+            background: rgba(245, 101, 101, 0.12);
+            color: #c53030;
+        }
+
+        .badge-movimiento.aumento {
+            background: rgba(56, 161, 105, 0.12);
+            color: #2f855a;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        @media (max-width: 1100px) {
+            .ajuste-detail-form {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .ajuste-detail-form {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="contenedor">
+        <nav id="breadcrumb" class="breadcrumb"></nav>
+
+        <div class="table-card">
+            <div class="table-header">
+                <div class="row g-3 align-items-center w-100">
+                    <div class="col-12 col-sm-6 col-lg-6">
+                        <h3>Lista de Ajustes</h3>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-2">
+                        <input type="date" class="form-control input-estilizado" id="filtroFecha">
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-2">
+                        <select id="filtroDeposito" class="form-select input-estilizado">
+                            <option value="">Todos los depósitos</option>
+                        </select>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-2">
+                        <button type="button" class="btn-primary w-100" id="btnNuevoAjuste">
+                            <i class="fa-solid fa-plus"></i> Nuevo ajuste
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="table-container ajuste-table-container">
+                <table>
+                    <thead>
+                        <tr class="sm">
+                            <th>ID</th>
+                            <th>Fecha</th>
+                            <th>Descripción</th>
+                            <th>Depósito</th>
+                            <th class="text-right">Productos</th>
+                            <th class="text-right">Total mov.</th>
+                            <th>Resumen</th>
+                            <th style="text-align: center;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaAjustes"></tbody>
+                </table>
+            </div>
+
+            <div class="pagination pagination-productos">
+                <div class="pagination-total" id="ajustePageinfo">
+                    Total registros 0
+                </div>
+                <div class="pagination-buttons pagination-buttons-productos">
+                    <button type="button" id="ajusteBtnpagPrimero" class="pagination-nav" aria-label="Primera página">
+                        <i class="fa-solid fa-angles-left"></i>
+                    </button>
+                    <button type="button" id="ajusteBtnpagAnterior" class="pagination-nav" aria-label="Página anterior">
+                        <i class="fa-solid fa-angle-left"></i>
+                    </button>
+                    <div id="ajustePaginationPages" class="pagination-pages"></div>
+                    <button type="button" id="ajusteBtnpagSiguiente" class="pagination-nav" aria-label="Página siguiente">
+                        <i class="fa-solid fa-angle-right"></i>
+                    </button>
+                    <button type="button" id="ajusteBtnpagUltimo" class="pagination-nav" aria-label="Última página">
+                        <i class="fa-solid fa-angles-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="ajusteModal" class="modal">
+        <div class="modal-content-vw ajuste-modal-content">
+            <div class="modal-header">
+                <h2 class="tituloform">Nuevo Ajuste de Stock</h2>
+                <button type="button" id="btnCloseAjusteModal" class="modal-close">×</button>
+            </div>
+            <div class="modal-body ajuste-modal-body">
+                <section class="ajuste-section">
+                    <div class="ajuste-section-body">
+                        <form id="ajusteForm" class="row g-3">
+                            <div class="col-12 col-md-3 col-lg-2">
+                                <label for="fecha" class="form-label">Fecha *</label>
+                                <input type="date" id="fecha" class="form-control input-estilizado" data-required="true">
+                            </div>
+                            <div class="col-12 col-md-4 col-lg-3">
+                                <label for="depositoAjuste" class="form-label">Depósito *</label>
+                                <select id="depositoAjuste" class="form-select input-estilizado" data-required="true">
+                                    <option value="">Seleccionar...</option>
+                                </select>
+                            </div>
+                            <div class="col-12 col-md-5 col-lg-7">
+                                <label for="descripcionAjuste" class="form-label">Descripción / Motivo *</label>
+                                <input type="text" id="descripcionAjuste" class="form-control input-estilizado" autocomplete="off" maxlength="180" data-required="true">
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <section class="ajuste-section" style="flex: 1; min-height: 0; overflow: hidden;">
+                    <div class="ajuste-section-body ajuste-detalle-body">
+                        <form id="detalleForm" class="ajuste-detail-form">
+                            <div>
+                                <label for="codigo" class="form-label">Código</label>
+                                <input type="text" id="codigo" class="form-control input-estilizado" autocomplete="off" placeholder="Código">
+                            </div>
+                            <div>
+                                <label for="producto" class="form-label">Producto *</label>
+                                <input type="text" id="producto" class="form-control input-estilizado" autocomplete="off" data-required="true" readonly>
+                                <input type="hidden" id="productoId">
+                            </div>
+                            <div>
+                                <label for="tipoMovimiento" class="form-label">Tipo ajuste *</label>
+                                <select id="tipoMovimiento" class="form-select input-estilizado" data-required="true">
+                                    <option value="ENTRADA">ENTRADA</option>
+                                    <option value="SALIDA">SALIDA</option>                                    
+                                </select>
+                            </div>
+                            <div>
+                                <label for="stockActual" class="form-label">Stock actual</label>
+                                <input type="text" id="stockActual" class="form-control input-estilizado" disabled>
+                            </div>
+                            <div>
+                                <label for="cantidad" class="form-label">Cantidad *</label>
+                                <input type="number" id="cantidad" class="form-control input-estilizado" min="0.01" step="0.01" data-required="true">
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-primary w-100" id="btnAgregarItem">
+                                    <i class="fa-solid fa-plus"></i> Agregar
+                                </button>
+                            </div>
+                        </form>
+
+                        <div class="table-container ajuste-table-container ajuste-detalle-tabla mt-3">
+                            <table>
+                                <thead>
+                                    <tr class="sm">
+                                        <th>Código</th>
+                                        <th>Producto</th>
+                                        <th>Tipo</th>
+                                        <th class="text-right">Stock actual</th>
+                                        <th class="text-right">Cantidad</th>
+                                        <th class="text-right">Stock resultante</th>
+                                        <th style="text-align: center;">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="detalleBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnCancelarAjuste" class="btn btn-secondary">Cancelar</button>
+                <button type="button" id="btnGuardarAjuste" class="btn btn-primary">Guardar ajuste</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="./ajuste-stock.js"></script>
+</body>
+</html>

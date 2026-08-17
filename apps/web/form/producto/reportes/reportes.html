@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../../../assets/favicon.png" type="image/png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="../../../css/style.css">
+    <title>Reportes de Productos - Mi Sistema</title>
+</head>
+<body>
+    <div class="contenedor">
+        <nav id="breadcrumb" class="breadcrumb"></nav>
+
+        <section id="reportesCatalogoProducto" class="reportes-catalogo">
+            <div class="reportes-page-header">
+                <h2>Reportes de Productos</h2>
+            </div>
+
+            <div class="reportes-catalogo-grid">
+                <button type="button" class="reporte-tile" data-reporte-producto="productos_listado">
+                    <span class="reporte-tile-icon">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                    </span>
+                    <span class="reporte-tile-content">
+                        <span class="reporte-tile-title">Listado de Productos</span>
+                        <span class="reporte-tile-text">Listado general de productos con filtros por descripción y estado.</span>
+                    </span>
+                </button>
+
+                <button type="button" class="reporte-tile" data-reporte-producto="productos_detallado">
+                    <span class="reporte-tile-icon">
+                        <i class="fa-solid fa-table-list"></i>
+                    </span>
+                    <span class="reporte-tile-content">
+                        <span class="reporte-tile-title">Listado Detallado</span>
+                        <span class="reporte-tile-text">Detalle completo con tipo, unidad, familia, IVA y control de stock.</span>
+                    </span>
+                </button>
+
+                <button type="button" class="reporte-tile" data-reporte-producto="stock_general">
+                    <span class="reporte-tile-icon">
+                        <i class="fa-solid fa-warehouse"></i>
+                    </span>
+                    <span class="reporte-tile-content">
+                        <span class="reporte-tile-title">Stock General</span>
+                        <span class="reporte-tile-text">Consulta de existencias por depósito y estado del producto.</span>
+                    </span>
+                </button>
+
+                <button type="button" class="reporte-tile" data-reporte-producto="lista_precios">
+                    <span class="reporte-tile-icon">
+                        <i class="fa-solid fa-tags"></i>
+                    </span>
+                    <span class="reporte-tile-content">
+                        <span class="reporte-tile-title">Lista de Precios</span>
+                        <span class="reporte-tile-text">Vista preparada para precios por moneda, tipo y estado.</span>
+                    </span>
+                </button>
+            </div>
+        </section>
+
+        <section id="reportesDetalleProducto" class="reportes-layout d-none">
+            <aside class="reportes-filtros-card">
+                <div class="reportes-card-header">
+                    <h3 id="reportesDetalleProductoTitulo">Reporte</h3>
+                </div>
+
+                <div class="reportes-card-body">
+                    <div id="filtroDescripcionWrap" class="row mb-2">
+                        <div class="col-12">
+                            <label for="filtroDescripcionProducto">Descripción</label>
+                            <input type="text" id="filtroDescripcionProducto" class="form-control input-estilizado" placeholder="Buscar por descripción">
+                        </div>
+                    </div>
+
+                    <div id="filtroEstadoWrap" class="row mb-2">
+                        <div class="col-12">
+                            <label for="filtroEstadoProducto">Estado</label>
+                            <select id="filtroEstadoProducto" class="form-select input-estilizado">
+                                <option value="">Todos</option>
+                                <option value="true">Activos</option>
+                                <option value="false">Inactivos</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="filtroDepositoWrap" class="row mb-2 d-none">
+                        <div class="col-12">
+                            <label for="filtroDepositoProducto">Depósito</label>
+                            <select id="filtroDepositoProducto" class="form-select input-estilizado">
+                                <option value="">Todos los depósitos</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="filtroSoloConStockWrap" class="row mb-2 d-none">
+                        <div class="col-12">
+                            <label class="checkbox-field checkbox-field-reportes">
+                                <input type="checkbox" id="filtroSoloConStockProducto">
+                                <span>Solo con stock disponible</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="reportes-ayuda">
+                        <p id="reportesProductoAyudaTexto">Configura los filtros disponibles para generar el reporte seleccionado.</p>
+                    </div>
+                </div>
+
+                <div class="reportes-card-footer">
+                    <button type="button" id="btnVolverReportesProductos" class="btn btn-secondary">Volver</button>
+                    <button type="button" id="btnLimpiarReporteProductos" class="btn btn-secondary">Limpiar</button>
+                    <button type="button" id="btnDescargarExcelProductos" class="btn btn-secondary">
+                        <i class="fa-solid fa-file-excel"></i> Descargar Excel
+                    </button>
+                    <button type="button" id="btnGenerarReporteProductos" class="btn btn-primary">
+                        <i class="fa-solid fa-file-lines"></i> Generar
+                    </button>
+                </div>
+            </aside>
+
+            <section class="reportes-visor-card">
+                <div class="reportes-card-header">
+                    <h3>Vista Previa</h3>
+                </div>
+
+                <div class="reportes-card-body reportes-card-body-visor">
+                    <div class="report-viewer-wrap">
+                        <iframe id="visorReporteProductos" class="report-viewer-frame" title="Visor de reporte de productos"></iframe>
+                        <div id="productoReporteEmpty" class="report-viewer-empty">
+                            <i class="fa-solid fa-file-pdf"></i>
+                            <h3>Sin vista previa</h3>
+                            <p id="reportesProductoEmptyTexto">Presiona Generar para visualizar el reporte seleccionado.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </section>
+    </div>
+
+    <script type="module" src="./reportes.js"></script>
+</body>
+</html>

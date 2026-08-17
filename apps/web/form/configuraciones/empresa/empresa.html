@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../../../assets/favicon.png" type="image/png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="../../../css/style.css">
+    <title>Empresa - Mi Sistema</title>
+</head>
+<body>
+    <div class="contenedor">
+        <nav id="breadcrumb" class="breadcrumb"></nav>
+
+        <div class="table-card">
+            <div class="table-header">
+                <h3>Configuración de Empresa</h3>
+                <div class="table-header-actions">
+                    <button type="button" class="btn-primary" id="btnGuardarEmpresa">
+                        <i class="fa-solid fa-floppy-disk"></i> Guardar Configuración
+                    </button>
+                </div>
+            </div>
+
+            <div class="config-header">
+                <div class="tabs">
+                    <div class="tab active" data-tabnom="datos">
+                        <p>Datos Generales</p>
+                    </div>
+                    <div class="tab" data-tabnom="fiscal">
+                        <p>Configuración Fiscal</p>
+                    </div>
+                    <div class="tab" data-tabnom="actividades">
+                        <p>Actividades Económicas</p>
+                    </div>
+                    <div class="tab" data-tabnom="ubicacion">
+                        <p>Ubicación</p>
+                    </div>
+                    <div class="tab" data-tabnom="electronica">
+                        <p>Facturación Electrónica</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-contents">
+                <div id="tab-datos" class="tab-content active">
+                    <div class="modal-body">
+                        <form id="empresaForm">
+                            <div class="row g-3">
+                                <div class="col-12 col-md-3">
+                                    <label for="ruc" class="form-label">RUC *</label>
+                                    <input type="text" id="ruc" class="form-control input-estilizado" autocomplete="off" data-required="true" data-tipo="numero" maxlength="20">
+                                </div>
+                                <div class="col-12 col-md-2">
+                                    <label for="dv_ruc" class="form-label">DV *</label>
+                                    <input type="text" id="dv_ruc" class="form-control input-estilizado" autocomplete="off" data-required="true" data-tipo="numero" maxlength="2">
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <label for="razon_social" class="form-label">Razón Social *</label>
+                                    <input type="text" id="razon_social" class="form-control input-estilizado" autocomplete="off" data-required="true">
+                                </div>
+                                <div class="col-12 col-md-3">
+                                    <label for="nombre_fantasia" class="form-label">Nombre Fantasía</label>
+                                    <input type="text" id="nombre_fantasia" class="form-control input-estilizado" autocomplete="off">
+                                </div>
+
+                                <div class="col-12 col-md-3">
+                                    <label for="tipo_contribuyente" class="form-label">Tipo Contribuyente *</label>
+                                    <select id="tipo_contribuyente" class="form-select input-estilizado" data-required="true">
+                                        <option value="">Seleccionar...</option>
+                                        <option value="1">Física</option>
+                                        <option value="2">Jurídica</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 col-md-3">
+                                    <label for="moneda_default" class="form-label">Moneda Default</label>
+                                    <select id="moneda_default" class="form-select input-estilizado">
+                                        <option value="PYG">PYG</option>
+                                        <option value="USD">USD</option>
+                                        <option value="BRL">BRL</option>
+                                        <option value="ARS">ARS</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 col-md-3">
+                                    <label for="estado" class="form-label">Estado</label>
+                                    <select id="estado" class="form-select input-estilizado">
+                                        <option value="ACTIVO">ACTIVO</option>
+                                        <option value="INACTIVO">INACTIVO</option>
+                                        <option value="SUSPENDIDO">SUSPENDIDO</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-12 col-md-4">
+                                    <label for="telefono" class="form-label">Teléfono</label>
+                                    <input type="text" id="telefono" class="form-control input-estilizado" autocomplete="off">
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" id="email" class="form-control input-estilizado" autocomplete="off">
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <label for="sitio_web" class="form-label">Sitio Web</label>
+                                    <input type="text" id="sitio_web" class="form-control input-estilizado" autocomplete="off" placeholder="https://">
+                                </div>
+
+                                <div class="col-12 col-md-8">
+                                    <label for="logo_ruta" class="form-label">Logo Ruta</label>
+                                    <input type="text" id="logo_ruta" class="form-control input-estilizado" autocomplete="off" placeholder="/ruta/logo.png o https://...">
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <label for="fecha_inicio_actividades" class="form-label">Fecha Inicio Actividades</label>
+                                    <input type="date" id="fecha_inicio_actividades" class="form-control input-estilizado">
+                                </div>
+
+                                <div class="col-12 col-md-4">
+                                    <div class="d-flex align-items-center gap-2 mt-md-4 pt-md-2">
+                                        <label class="switch mb-0">
+                                            <input type="checkbox" id="iva_incluido_default" checked>
+                                            <span class="slider"></span>
+                                        </label>
+                                        <label for="iva_incluido_default" class="form-label mb-0">IVA incluido por defecto</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="tab-fiscal" class="tab-content">
+                    <div class="modal-body empresa-fiscal-body">
+                        <div class="row g-3">
+                            <div class="col-12 col-md-4">
+                                <label for="tipo_regimen" class="form-label">Tipo Régimen</label>
+                                <select id="tipo_regimen" class="form-select input-estilizado" form="empresaForm">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="1">Régimen de Turismo</option>
+                                    <option value="2">Importador</option>
+                                    <option value="3">Exportador</option>
+                                    <option value="4">Maquila</option>
+                                    <option value="5">Ley N° 60/90</option>
+                                    <option value="6">Régimen del Pequeño Productor</option>
+                                    <option value="7">Régimen del Mediano Productor</option>
+                                    <option value="8">Régimen Contable</option>
+                                </select>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label for="tipo_transaccion" class="form-label">Tipo Transacción</label>
+                                <select id="tipo_transaccion" class="form-select input-estilizado" form="empresaForm">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="1">Venta de mercadería</option>
+                                    <option value="2">Prestación de servicios</option>
+                                    <option value="3">Mixto (Venta de mercadería y servicios)</option>
+                                    <option value="4">Venta de activo fijo</option>
+                                    <option value="5">Venta de divisas</option>
+                                    <option value="6">Compra de divisas</option>
+                                    <option value="7">Promoción o entrega de muestras</option>
+                                    <option value="8">Donación</option>
+                                    <option value="9">Anticipo</option>
+                                    <option value="10">Compra de productos</option>
+                                    <option value="11">Compra de servicios</option>
+                                    <option value="12">Venta de crédito fiscal</option>
+                                    <option value="13">Muestras médicas (Art. 3 RG 24/2014)</option>
+                                </select>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label for="tipo_impuesto" class="form-label">Tipo Impuesto</label>
+                                <select id="tipo_impuesto" class="form-select input-estilizado" form="empresaForm">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="1">IVA</option>
+                                    <option value="2">ISC</option>
+                                    <option value="3">Renta</option>
+                                    <option value="4">Ninguno</option>
+                                    <option value="5">IVA - Renta</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12 empresa-obligaciones-bloque">
+                                <label class="form-label">Obligaciones</label>
+                                <div class="empresa-obligaciones-tabla-wrap">
+                                    <div class="empresa-obligaciones-head">
+                                        <table>
+                                            <thead>
+                                                <tr class="sm">
+                                                    <th>Sel.</th>
+                                                    <th>Código</th>
+                                                    <th>Descripción</th>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                    <div class="empresa-obligaciones-body scrollbar-oculto">
+                                        <table>
+                                            <tbody id="obligacionTableBody"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="empresa-obligaciones-footer-space" aria-hidden="true"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-actividades" class="tab-content">
+                    <div class="modal-body">
+                        <div class="row g-3 justify-content-end">
+                            <div class="col-12 col-md-2 d-flex justify-content-end align-items-end">
+                                <button type="button" class="btn btn-secondary w-100" id="btnBuscarActividad" title="Buscar actividad">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr class="sm">
+                                    <th>ID</th>
+                                    <th>Código</th>
+                                    <th>Descripción</th>
+                                    <th>Principal</th>
+                                    <th style="text-align: center;">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="actividadTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="tab-ubicacion" class="tab-content">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-12 col-md-8">
+                                <label for="direccion" class="form-label">Dirección *</label>
+                                <input type="text" id="direccion" class="form-control input-estilizado" autocomplete="off" data-required="true" form="empresaForm">
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label for="numero_casa" class="form-label">Número Casa</label>
+                                <input type="text" id="numero_casa" class="form-control input-estilizado" autocomplete="off" form="empresaForm">
+                            </div>
+
+                            <div class="col-12 col-md-2">
+                                <label for="departamento_codigo" class="form-label">Cod. Departamento *</label>
+                                <input type="text" id="departamento_codigo" class="form-control input-estilizado" autocomplete="off" data-required="true" data-tipo="numero" form="empresaForm" readonly>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label for="departamento_descripcion" class="form-label">Departamento *</label>
+                                <select id="departamento_descripcion" class="form-select input-estilizado" data-required="true" form="empresaForm">
+                                    <option value="">Seleccionar...</option>
+                                </select>
+                            </div>
+                            <div class="col-12 col-md-2">
+                                <label for="distrito_codigo" class="form-label">Cod. Distrito *</label>
+                                <input type="text" id="distrito_codigo" class="form-control input-estilizado" autocomplete="off" data-required="true" data-tipo="numero" form="empresaForm" readonly>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label for="distrito_descripcion" class="form-label">Distrito *</label>
+                                <select id="distrito_descripcion" class="form-select input-estilizado" data-required="true" form="empresaForm">
+                                    <option value="">Seleccionar...</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12 col-md-2">
+                                <label for="ciudad_codigo" class="form-label">Cod. Ciudad *</label>
+                                <input type="text" id="ciudad_codigo" class="form-control input-estilizado" autocomplete="off" data-required="true" data-tipo="numero" form="empresaForm" readonly>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label for="ciudad_descripcion" class="form-label">Ciudad *</label>
+                                <select id="ciudad_descripcion" class="form-select input-estilizado" data-required="true" form="empresaForm">
+                                    <option value="">Seleccionar...</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-electronica" class="tab-content">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-12 col-md-4">
+                                <div class="d-flex align-items-center gap-2 mt-md-4 pt-md-2">
+                                    <label class="switch mb-0">
+                                        <input type="checkbox" id="es_facturador_electronico">
+                                        <span class="slider"></span>
+                                    </label>
+                                    <label for="es_facturador_electronico" class="form-label mb-0">Es facturador electrónico</label>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label for="ambiente_sifen" class="form-label">Ambiente SIFEN</label>
+                                <select id="ambiente_sifen" class="form-select input-estilizado" form="empresaForm">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="TEST">TEST</option>
+                                    <option value="PROD">PROD</option>
+                                </select>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label for="codigo_seguridad_contribuyente" class="form-label">CSC</label>
+                                <input type="text" id="codigo_seguridad_contribuyente" class="form-control input-estilizado" autocomplete="off" form="empresaForm">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="actividadCatalogoModal" class="modal">
+        <div class="modal-content modal-content-vw modal-content-catalog modal-content-actividad-catalogo vw-80">
+            <div class="modal-header">
+                <h2 class="tituloform">Catálogo de Actividades Económicas</h2>
+                <button type="button" id="btnCloseActividadCatalogo" class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3 mb-2">
+                    <div class="col-12 col-md-8">
+                        <label for="actividadCatalogoBuscar" class="form-label">Buscar por código o descripción</label>
+                        <input type="text" id="actividadCatalogoBuscar" class="form-control input-estilizado" autocomplete="off">
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <label for="actividadCatalogoSeccion" class="form-label">Sección</label>
+                        <select id="actividadCatalogoSeccion" class="form-select input-estilizado">
+                            <option value="">Todas las secciones</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-container table-container-catalog">
+                    <table>
+                        <thead>
+                            <tr class="sm">
+                                <th>Sección</th>
+                                <th>Código</th>
+                                <th>Descripción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="actividadCatalogoTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="./empresa.js"></script>
+</body>
+</html>

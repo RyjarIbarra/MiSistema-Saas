@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <link rel="icon" href="../../assets/favicon.png" type="image/png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">   
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="../../css/style.css">      
+    <title>Clientes - Mi Sistema</title>
+</head>
+<body>
+    <div class="contenedor">
+        
+        <!-- Breadcrumb -->
+        <nav id="breadcrumb" class="breadcrumb"></nav>
+
+        <!-- Filtros y Botón Nuevo Cliente -->
+        <!-- <div class="filters-card">
+            <div class="row" style="display: flex; justify-content: space-between; align-items: end;">
+                <div class="col-3">
+                    <label>Buscar</label>
+                    <input type="text" class="form-control input-estilizado" placeholder="Nombre o RUC..." id="searchInput">
+                </div>
+                <div class="col-3" style="display: flex; justify-content: end; align-items: end;">
+                    <button type="button" id="btnNewClient" class="btn-save btn-primary"><i class="fa-solid fa-plus"></i> Nuevo Cliente</button>
+                </div>
+            </div>
+        </div> -->
+
+        <!-- Tabla de clientes -->
+        <div class="table-card">    
+
+            <div class="table-header">
+                <h3>Lista de Clientes</h3>
+                <div class="table-header-actions">
+                    <input type="text" class="form-control input-estilizado" placeholder="Buscar por Nombre o RUC..." autocomplete="off" id="searchInput">
+                    <button type="button" class="btn-primary" id="btnNewClient">
+                        <i class="fa-solid fa-plus"></i> Nuevo Cliente
+                    </button>
+                </div>
+            </div>
+            
+            <!-- <span class="table-stats">Total: <strong>156 clientes</strong></span> -->  
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr class="sm">
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>RUC/CI</th>
+                            <th>Email</th>
+                            <th>Teléfono</th>                                                   
+                            <th style="text-align: center;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaClientes">
+                        <tr class="sm">
+                            <td>1</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination pagination-productos">
+                <div class="pagination-total" id="pageinfo">
+                    Total registros 0
+                </div>
+                <div class="pagination-buttons pagination-buttons-productos" id="clientePagination">
+                    <button type="button" id="btnpagPrimero" class="pagination-nav" aria-label="Primera página">
+                        <i class="fa-solid fa-angles-left"></i>
+                    </button>
+                    <button type="button" id="btnpagAnterior" class="pagination-nav" aria-label="Página anterior">
+                        <i class="fa-solid fa-angle-left"></i>
+                    </button>
+                    <div id="clientePaginationPages" class="pagination-pages"></div>
+                    <button type="button" id="btnpagSiguiente" class="pagination-nav" aria-label="Página siguiente">
+                        <i class="fa-solid fa-angle-right"></i>
+                    </button>
+                    <button type="button" id="btnpagUltimo" class="pagination-nav" aria-label="Última página">
+                        <i class="fa-solid fa-angles-right"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Modal Clientes -->
+        <div id="clientModal" class="modal">
+            <div class="modal-content modal-content-tabs">
+                <div class="modal-header">
+                    <div class="modal-header-title">
+                        <h2 id="modalTitle" class="tituloform">Nuevo Cliente</h2>
+                        <div class="info-note">
+                            <button
+                                type="button"
+                                class="info-note-button"
+                                aria-label="Información sobre el tipo de documento"
+                            >
+                                <i class="fa-solid fa-circle-info"></i>
+                            </button>
+                            <div class="info-note-tooltip">
+                                <span class="info-note-bullet">*</span>
+                                Cuando el cliente tiene RUC, el tipo de documento debe ser (Otro).
+                                <br>
+                                <span class="info-note-bullet">*</span>
+                                Cuando el cliente tiene CI, el tipo de documento debe ser (Cédula paraguaya).
+                                <br>
+                                <span class="info-note-bullet">*</span>
+                                Cuando el cliente no tiene RUC ni CI, El tipo de documento debe ser (Innominado) y la descripción debe ser "Sin nombre" y el campo RUC debe ser 0 (Cero).                                
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" id="btnCloseModal" class="modal-close">×</button>
+                </div>
+                <div class="config-header">
+                    <div class="tabs">
+                        <div id="cab-cliente-general" class="tab active" data-tabnom="cliente-general">
+                            <p>Datos Generales</p>
+                        </div>
+                        <div id="cab-cliente-ubicacion" class="tab" data-tabnom="cliente-ubicacion">
+                            <p>País y Ubicación</p>
+                        </div>
+                        <div id="cab-cliente-otros" class="tab" data-tabnom="cliente-otros">
+                            <p>Otros</p>
+                        </div>
+                    </div>
+                </div>
+                <form id="clientForm">
+                    <div class="tab-contents" style="min-height: 450px;">
+                        <div id="tab-cliente-general" class="tab-content active">
+                            <div class="modal-body">
+                                <div class="row mb-2">
+                                    <div class="col-6">
+                                        <label for="tipodoc">Tipo de documento</label>
+                                        <select id="tipodoc" class="form-select input-estilizado" data-required="true">
+                                            <option value="1">Cédula paraguaya</option>
+                                            <option value="2">Pasaporte</option>
+                                            <option value="3">Cédula extranjera</option>
+                                            <option value="4">Carnet de residencia</option>
+                                            <option value="5">Innominado</option>
+                                            <option value="6">Tarjeta Diplomática de exoneración fiscal</option>
+                                            <option value="9" selected>Otro (RUC)</option>
+                                        </select>
+                                    </div>                                    
+                                    <div class="col-6">
+                                        <label for="ruc">RUC *</label>
+                                        <input type="text" id="ruc" class="form-control input-estilizado" placeholder="80012345-6" autocomplete="off" data-required="true">
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6">
+                                        <label for="nombre">Nombre *</label>
+                                        <input type="text" id="nombre" class="form-control input-estilizado" placeholder="Juan Pérez" autocomplete="off" data-required="true">
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="naturaleza_receptor">Naturaleza del receptor</label>
+                                        <select id="naturaleza_receptor" class="form-select input-estilizado" data-required="true">
+                                            <option value="1">Contribuyente</option>
+                                            <option value="2">No contribuyente</option>
+                                        </select>
+                                    </div>                                    
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6">
+                                        <label for="tipo_operacion">Tipo de Operación</label>
+                                        <select id="tipo_operacion" class="form-select input-estilizado" data-required="true">
+                                            <option value="1">B2B - Venta a empresa/contribuyente</option>
+                                            <option value="2">B2C - Venta a consumidor</option>
+                                            <option value="3">B2G - Venta a entidad del gobierno</option>
+                                            <option value="4">B2F - Venta a receptor del exterior</option>
+                                        </select>
+                                    </div>                                    
+                                    <div class="col-6">
+                                        <label for="tipo_contribuyente">Tipo de contribuyente</label>
+                                        <select id="tipo_contribuyente" class="form-select input-estilizado" data-required="true">
+                                            <option value="1">Persona Física</option>
+                                            <option value="2">Persona Jurídica</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6">
+                                        <label for="email">Email *</label>
+                                        <input type="email" id="email" class="form-control input-estilizado" autocomplete="off" placeholder="correo@ejemplo.com">
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="telefono">Teléfono</label>
+                                        <input type="tel" id="telefono" class="form-control input-estilizado" autocomplete="off" placeholder="+595 981 123456">
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-12">
+                                        <label for="observaciones">Observaciones</label>
+                                        <input type="text" id="observaciones" class="form-control input-estilizado" autocomplete="off" placeholder="Notas adicionales...">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="tab-cliente-otros" class="tab-content">
+                            <div class="modal-body">
+                                <div class="row mb-2">
+                                    <div class="col-6">
+                                        <label for="tipoprec">Tipo Precio</label>
+                                        <select id="tipoprec" class="form-select input-estilizado">
+                                            <option value="">Seleccionar...</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="tab-cliente-ubicacion" class="tab-content">
+                            <div class="modal-body">
+                                <div class="row mb-2">
+                                    <div class="col-8">
+                                        <label for="pais_codigo">País</label>
+                                        <select id="pais_codigo" class="form-select input-estilizado"></select>
+                                    </div>
+                                    <div class="col-4">
+                                        <label for="pais_prefijo">Prefijo</label>
+                                        <input type="text" id="pais_prefijo" class="form-control input-estilizado" autocomplete="off" readonly>
+                                    </div>
+                                </div>
+                                <div id="ubicacionParaguayRow" class="row mb-2">
+                                    <div class="col-4">
+                                        <label for="departamento_cliente">Departamento</label>
+                                        <select id="departamento_cliente" class="form-select input-estilizado"></select>
+                                    </div>
+                                    <div class="col-4">
+                                        <label for="distrito_cliente">Distrito</label>
+                                        <select id="distrito_cliente" class="form-select input-estilizado"></select>
+                                    </div>
+                                    <div class="col-4">
+                                        <label for="ciudad_cliente">Ciudad</label>
+                                        <select id="ciudad_cliente" class="form-select input-estilizado"></select>
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-12">
+                                        <label for="direccion">Dirección</label>
+                                        <input type="text" id="direccion" class="form-control input-estilizado" autocomplete="off" placeholder="Calle Principal 123">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <button type="button" id="btnCancel" class="btn btn-secondary">Cancelar</button>
+                    <button type="submit" id="btnGuardar" class="btn btn-primary">Guardar</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script type="module" src="./cliente.js"></script>
+</body>
+</html>

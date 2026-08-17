@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../../assets/favicon.png" type="image/png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">   
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="../../css/style.css">      
+    <title>Document</title>
+</head>
+<body>
+    <div class="contenedor">
+        <nav id="breadcrumb" class="breadcrumb"></nav>
+
+        <div class="table-card">
+
+            <div class="table-header">
+                <div class="row g-3 align-items-center w-100">
+                    <div class="col-12 col-sm-6 col-md-3 col-lg-3 col-xl-4">
+                        <h3>Lista de Productos</h3>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-3 col-lg-3 col-xl-4">
+                        <input type="text" class="form-control input-estilizado producto-search-input" placeholder="Buscar por Descripción, GTIN o ID" autocomplete="off" id="searchInput">
+                    </div>
+                    <div class="col-12 col-md-3 col-xl-2">
+                        <button type="button" class="btn-outline-primary-soft producto-import-btn w-100" id="btnImportExcel">
+                            <i class="fa-solid fa-file-excel"></i> Importar Excel
+                        </button>
+                    </div>
+                    <div class="col-12 col-md-3 col-xl-2">
+                        <button type="button" class="btn-primary producto-new-btn w-100" id="btnNew">
+                            <i class="fa-solid fa-plus"></i> Nuevo Producto
+                        </button>
+                    </div>
+                </div>
+            </div>  
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr class="sm">
+                            <th>ID</th>
+                            <th>GTIN</th>
+                            <th>Descripción</th>
+                            <th>Activo</th>
+                            <th style="text-align: center;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaProductos">
+                        <tr class="sm">
+                            <td data-label="ID">938</td>
+                            <td data-label="GTIN">7793650551918</td>
+                            <td data-label="Descripción">Acondicionador 350ml Clásico</td>
+                            <td data-label="Activo">Activo</td>
+                            <td data-label="Acciones">
+                                <div class="action-buttons">
+                                    <button class="btn-icon" tipo-btn="ver" data-id="938" title="Ver">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-principal)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-icon lucide-eye"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    </button>
+                                    <button class="btn-icon" tipo-btn="editar" data-id="938" title="Editar">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-principal)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-pen-icon lucide-square-pen"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"></path></svg>
+                                    </button>
+                                    <button class="btn-icon" tipo-btn="eliminar" data-id="938" title="Eliminar">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-principal)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-icon lucide-trash"><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                    </button>
+                                </div>
+                            </td>             
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination pagination-productos">
+                <div class="pagination-total" id="pageinfo">
+                    Total registros 0
+                </div>
+                <div class="pagination-buttons pagination-buttons-productos" id="productoPagination">
+                    <button type="button" id="btnpagPrimero" class="pagination-nav" aria-label="Primera página">
+                        <i class="fa-solid fa-angles-left"></i>
+                    </button>
+                    <button type="button" id="btnpagAnterior" class="pagination-nav" aria-label="Página anterior">
+                        <i class="fa-solid fa-angle-left"></i>
+                    </button>
+                    <div id="productoPaginationPages" class="pagination-pages"></div>
+                    <button type="button" id="btnpagSiguiente" class="pagination-nav" aria-label="Página siguiente">
+                        <i class="fa-solid fa-angle-right"></i>
+                    </button>
+                    <button type="button" id="btnpagUltimo" class="pagination-nav" aria-label="Última página">
+                        <i class="fa-solid fa-angles-right"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Modal Producto -->
+
+        <!-- Forma 1: Con clase -->
+        <!-- <div class="modal-content-vw vw-70"> -->
+
+        <!-- Forma 2: Con CSS variable inline -->
+        <!-- <div class="modal-content-vw" style="--modal-width: 65vw;"> -->
+
+        <!-- Forma 3: Por defecto (80vw) -->
+        <!-- <div class="modal-content-vw"> -->
+
+<!-- Familia es la clasificación más amplia y estructural, normalmente ligada al tipo de negocio o a la naturaleza del producto. Por ejemplo: "Bebidas", "Limpieza", "Ferretería". Es la división de más alto nivel y suele usarse para reportes gerenciales y para organizar el catálogo a grandes rasgos.
+Categoría es una subdivisión dentro de la familia, más específica. Dentro de "Bebidas" podrías tener "Gaseosas", "Aguas", "Jugos". Es la que más se usa para filtrar y navegar el catálogo en el día a día.
+Marca es independiente de las dos anteriores: identifica al fabricante o la línea comercial (Coca-Cola, Pepsi, Bagley). Una misma marca puede tener productos en varias familias y categorías distintas. -->
+
+        <div id="producModal" class="modal">
+            <div class="modal-content-vw vw-80">
+
+                <div class="modal-header">
+                    <h2 id="modalTitle" class="tituloform">Nuevo Producto</h2>
+                    <button type="button" id="btnCloseModal" class="modal-close">×</button>
+                </div>
+
+                <div class="config-header">                    
+                    <div class="tabs">
+                        <div id="cab-general" class="tab active" data-tabnom="general">
+                            <p>General</p>
+                        </div>  
+                        <div id="cab-tributario" class="tab" data-tabnom="tributario">
+                            <p>Tributario</p>
+                        </div>
+                        <div id="cab-precios" class="tab" data-tabnom="precios">
+                            <p>Precios</p> 
+                        </div>   
+                        <div id="cab-configuracion" class="tab" data-tabnom="configuracion">
+                            <p>Configuración</p> 
+                        </div>
+                    </div>                                                                         
+                </div>                
+
+                <div class="tab-contents" style="min-height: 420px;">
+
+                    <div id="tab-general" class="tab-content active">
+                        <div class="modal-body">
+                            <form id="generalForm">
+                                <div class="row g-3 mb-2">
+                                    <div class="col-12 col-md-4 col-xl-3">
+                                        <label for="tipo_producto" class="form-label">Tipo *</label>
+                                        <select id="tipo_producto" class="form-select input-estilizado" data-required="true">
+                                            <option value="1">Producto</option>
+                                            <option value="2">Servicio</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row g-3 mb-2">
+                                    <div class="col-12 col-md-8 col-xl-8">
+                                        <label for="descripcion" class="form-label">Descripción *</label>
+                                        <input type="text" id="descripcion" class="form-control input-estilizado" placeholder="" autocomplete="off" data-required="true">
+                                    </div>
+                                    <div class="col-12 col-md-4 col-xl-4">
+                                        <label for="unidad" class="form-label">Unidad de Med. *</label>
+                                        <select id="unidad" class="form-select input-estilizado" data-required="true"></select>
+                                    </div>
+                                </div>
+
+                                <div class="row g-3 mb-2">
+                                    <div class="col-12 col-md-6 col-xl-6">
+                                        <label for="gtin" class="form-label">GTIN</label>
+                                        <input type="text" id="gtin" class="form-control input-estilizado" placeholder="" autocomplete="off" maxlength="14">
+                                    </div>
+                                    <div class="col-12 col-md-6 col-xl-6">
+                                        <label for="gtin_paquete" class="form-label">GTIN Paquete</label>
+                                        <input type="text" id="gtin_paquete" class="form-control input-estilizado" placeholder="" autocomplete="off" maxlength="14">
+                                    </div>
+                                </div>
+
+                                <div class="row g-3 mb-2">
+                                    <div class="col-12 col-md-4 col-xl-4">
+                                        <label for="categoria" class="form-label">Categoría</label>
+                                        <select id="categoria" class="form-select input-estilizado">
+                                            <option value="">Seleccionar...</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12 col-md-4 col-xl-4">
+                                        <label for="marca" class="form-label">Marca</label>
+                                        <select id="marca" class="form-select input-estilizado">
+                                            <option value="">Seleccionar...</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12 col-md-4 col-xl-4">
+                                        <label for="ubicacion" class="form-label">Ubicación</label>
+                                        <select id="ubicacion" class="form-select input-estilizado">
+                                            <option value="">Seleccionar...</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row g-3 mb-2">
+                                    <div class="col-12 col-md-12 col-xl-12">
+                                        <label for="proobs" class="form-label">Observación</label>
+                                        <input type="text" id="proobs" class="form-control input-estilizado" placeholder="" autocomplete="off">
+                                    </div>
+                                </div>                                                               
+                            </form>
+                        </div>
+                    </div>
+
+                    <div id="tab-tributario" class="tab-content">
+                        <div class="modal-body">
+                            <form id="tributarioForm">
+                                <div class="row g-3 mb-2">
+                                    <div class="col-12 col-md-4 col-xl-3">
+                                        <label for="afectacion_iva" class="form-label">Afectación IVA *</label>
+                                        <select id="afectacion_iva" class="form-select input-estilizado" data-required="true">
+                                            <option value="1">Gravado</option>
+                                            <option value="2">Exonerado</option>
+                                            <option value="3">Exento</option>
+                                            <option value="4">Gravado parcial</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12 col-md-4 col-xl-3">
+                                        <label for="tasa_iva" class="form-label">Tasa IVA *</label>
+                                        <select id="tasa_iva" class="form-select input-estilizado" data-required="true">
+                                            <option value="10">10</option>
+                                            <option value="5">5</option>
+                                            <option value="0">0</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12 col-md-4 col-xl-3">
+                                        <label for="proporcion_iva" class="form-label">Proporción IVA *</label>
+                                        <input type="number" id="proporcion_iva" class="form-control input-estilizado" min="0" max="100" step="0.01" data-required="true">
+                                    </div>
+                                    <div class="col-12 col-md-4 col-xl-3">
+                                        <label for="pais_origen" class="form-label">País de Origen</label>
+                                        <select id="pais_origen" class="form-select input-estilizado"></select>
+                                    </div>
+                                </div>
+
+                                <div class="row g-3 mb-2">
+                                    <div class="col-12 col-md-4 col-xl-3">
+                                        <label for="aplica_isc" class="form-label">ISC</label>
+                                        <select id="aplica_isc" class="form-select input-estilizado">
+                                            <option value="false">No aplica</option>
+                                            <option value="true">Aplica ISC</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12 col-md-4 col-xl-3">
+                                        <label for="tasa_isc" class="form-label">Tasa ISC</label>
+                                        <input type="number" id="tasa_isc" class="form-control input-estilizado" min="0" max="100" step="0.01">
+                                    </div>
+                                    <div class="col-12 col-md-4 col-xl-3">
+                                        <label for="proporcion_isc" class="form-label">Proporción ISC</label>
+                                        <input type="number" id="proporcion_isc" class="form-control input-estilizado" min="0" max="100" step="0.01">
+                                    </div>
+                                </div>
+
+                                <div class="row g-3 mb-2">
+                                    <div class="col-12 col-md-4 col-xl-3">
+                                        <label for="ncm" class="form-label">NCM</label>
+                                        <input type="text" id="ncm" class="form-control input-estilizado" autocomplete="off" maxlength="8">
+                                    </div>
+                                    <div class="col-12 col-md-4 col-xl-3">
+                                        <label for="partida_arancelaria" class="form-label">Partida Arancelaria</label>
+                                        <input type="text" id="partida_arancelaria" class="form-control input-estilizado" autocomplete="off" maxlength="20">
+                                    </div>
+                                    <div class="col-12 col-md-4 col-xl-3">
+                                        <label for="dncp_nivel_general" class="form-label">DNCP Nivel General</label>
+                                        <input type="text" id="dncp_nivel_general" class="form-control input-estilizado" autocomplete="off" maxlength="8">
+                                    </div>
+                                    <div class="col-12 col-md-4 col-xl-3">
+                                        <label for="dncp_nivel_especifico" class="form-label">DNCP Nivel Específico</label>
+                                        <input type="text" id="dncp_nivel_especifico" class="form-control input-estilizado" autocomplete="off" maxlength="4">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div id="tab-precios" class="tab-content">
+                        <div class="modal-body">
+                            <form id="PrecioForm">
+                                <div class="row g-3">                                
+                                    
+                                    <div class="col-12 col-md-3 col-xl-3">
+                                        <label for="tipoPrecio" class="form-label">Tipo</label>
+                                        <select id="tipoPrecio" class="form-select input-estilizado">                                                                                       
+                                        </select>
+                                    </div>       
+                                    <div class="col-12 col-md-3 col-xl-3">
+                                        <label for="moneda" class="form-label">Moneda</label>
+                                        <select id="moneda" class="form-select input-estilizado" data-required="true">
+                                        </select>
+                                    </div>
+                                    <div class="col-12 col-md-3 col-xl-3">
+                                        <label for="precio" class="form-label">Precio</label>
+                                        <input type="text" id="precio" class="form-control input-estilizado" data-importe placeholder="Ej: 100.000" autocomplete="off" data-required="true">
+                                    </div>
+
+                                    <div class="col-12 col-md-3 col-xl-3" style="display: flex; justify-content: start; align-items: end;">
+                                        <button type="button" class="btn-primary" id="btnAgregarPrecio">
+                                            <i class="fa-solid fa-plus"></i> Agregar
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </form>
+                        </div>
+                        <div class="table-precio-prod">                            
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr class="sm">
+                                            <th >Tipo</th>
+                                            <th >Moneda</th>
+                                            <th >Precio</th>        
+                                            <th >Estado</th>                                                                                     
+                                            <th style="text-align: center;">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="precioTableBody">
+
+                                    </tbody>
+                                </table>
+                            </div>                                                           
+                        </div>
+                    </div>
+
+                    <div id="tab-configuracion" class="tab-content">
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-12 col-md-6 col-xl-4 p-2">
+                                    <div class="custom-checkbox-container">
+                                        <label class="custom-checkbox">
+                                            <input type="checkbox" id="ctrlstock" checked>
+                                            <span class="checkmark">
+                                                <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                            </span>
+                                            <span class="checkbox-text">Controlar Stock.</span>
+                                        </label>
+                                    </div>                                 
+                                </div>
+                                <div class="col-12 col-md-6 col-xl-4 p-2" id="stockNegativoContainer">
+                                    <div class="custom-checkbox-container">
+                                        <label class="custom-checkbox">
+                                            <input type="checkbox" id="stocknegativo">
+                                            <span class="checkmark">
+                                                <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                            </span>
+                                            <span class="checkbox-text">Permitir Stock en negativo.</span>
+                                        </label>
+                                    </div>                               
+                                </div>                                
+                            </div>
+                            <div class="row">
+                                <div class="col-12 col-md-6 col-xl-4 p-2">
+                                    <div class="custom-checkbox-container">
+                                        <label class="custom-checkbox">
+                                            <input type="checkbox" id="moddesc">
+                                            <span class="checkmark">
+                                                <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                            </span>
+                                            <span class="checkbox-text">Permitir modificar descripcion.</span>
+                                        </label>
+                                    </div>                               
+                                </div>
+                            </div>    
+                            <div class="row">
+                                <div class="col-12 col-md-6 col-xl-4 p-2">
+                                    <div class="custom-checkbox-container">
+                                        <label class="custom-checkbox">
+                                            <input type="checkbox" id="modprec">
+                                            <span class="checkmark">
+                                                <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                            </span>
+                                            <span class="checkbox-text">Permitir modificar precio.</span>
+                                        </label>
+                                    </div>                               
+                                </div>
+                                <div class="col-12 col-md-6 col-xl-4 p-2">
+                                    <div class="custom-checkbox-container">
+                                        <label class="custom-checkbox">
+                                            <input type="checkbox" id="activo" checked>
+                                            <span class="checkmark">
+                                                <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                            </span>
+                                            <span class="checkbox-text">Producto activo.</span>
+                                        </label>
+                                    </div>                               
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="btnCancel" class="btn btn-secondary">Cancelar</button>
+                    <button type="submit" id="btnGuardar" class="btn btn-primary">Guardar</button>
+                </div> 
+            </div>
+        </div> 
+
+        <div id="importExcelModal" class="modal">
+            <div class="modal-content modal-content-vw modal-content-catalog modal-content-import-productos vw-80">
+                <div class="modal-header">
+                    <h2 class="tituloform">Importar Productos</h2>
+                    <button type="button" id="btnCloseImportExcelModal" class="modal-close">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="import-layout">
+                        <div class="import-topbar">
+                            <div class="import-actions">
+                                <input type="file" id="excelFileInput" accept=".xlsx,.xls" hidden>
+                                <button type="button" class="btn btn-secondary" id="btnDescargarPlantilla">
+                                    <i class="fa-solid fa-download"></i> Descargar plantilla
+                                </button>
+                                <button type="button" class="btn btn-primary" id="btnSeleccionarExcel">
+                                    <i class="fa-solid fa-folder-open"></i> Seleccionar archivo
+                                </button>
+                                <button type="button" class="btn btn-primary" id="btnSubirImportacion" disabled>
+                                    <i class="fa-solid fa-upload"></i> Subir archivo
+                                </button>
+                                <button type="button" class="btn btn-secondary" id="btnLimpiarImportacion">
+                                    Limpiar
+                                </button>
+                            </div>
+                            <div class="import-file-meta" id="importFileMeta">Sin archivo seleccionado</div>
+                        </div>
+
+                        <div class="import-dropzone" id="importDropzone" tabindex="0">
+                            <div class="import-dropzone-icon">
+                                <i class="fa-solid fa-file-arrow-up"></i>
+                            </div>
+                            <div class="import-dropzone-copy">
+                                <strong>Arrastra aquí tu archivo Excel</strong>
+                                <span>Formatos permitidos: .xlsx, .xls</span>
+                            </div>
+                        </div>
+
+                        <div class="import-summary" id="importSummary">
+                            <div class="import-summary-item">
+                                <span class="import-summary-label">Filas detectadas</span>
+                                <strong id="importRowsCount">0</strong>
+                            </div>
+                            <div class="import-summary-item">
+                                <span class="import-summary-label">Columnas detectadas</span>
+                                <strong id="importColumnsCount">0</strong>
+                            </div>
+                            <div class="import-summary-item import-summary-item-wide">
+                                <span class="import-summary-label">Cabeceras</span>
+                                <strong id="importHeaders">Sin datos</strong>
+                            </div>
+                            <div class="import-summary-item">
+                                <span class="import-summary-label">Importados</span>
+                                <strong id="importSuccessCount">0</strong>
+                            </div>
+                            <div class="import-summary-item">
+                                <span class="import-summary-label">Fallidos</span>
+                                <strong id="importFailedCount">0</strong>
+                                <button type="button" id="btnVerErroresImportacion" class="import-summary-link" hidden>Ver detalle</button>
+                            </div>
+                            <div class="import-summary-item import-summary-item-wide">
+                                <span class="import-summary-label">Estado</span>
+                                <strong id="importStatusText">Esperando archivo</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="btnCancelImportExcel" class="btn btn-secondary">Cerrar</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="importErrorsModal" class="modal modal-import-errors">
+            <div class="modal-content-vw modal-content-catalog modal-content-import-errors" style="--modal-width: 80vw;">
+                <div class="modal-header">
+                    <h2 class="tituloform">Errores de Migración</h2>
+                    <button type="button" id="btnCloseImportErrorsModal" class="modal-close">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-container table-container-catalog import-errors-modal-table">
+                        <table>
+                            <thead>
+                                <tr class="sm">
+                                    <th>Fila</th>
+                                    <th>Producto</th>
+                                    <th>Error</th>
+                                </tr>
+                            </thead>
+                            <tbody id="importErrorsBody">
+                                <tr>
+                                    <td colspan="3">
+                                        <div class="compact-empty-state">
+                                            <h3>Sin errores de importación</h3>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="btnAceptarImportErrorsModal" class="btn btn-secondary">Cerrar</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script type="module" src="./producto.js"></script>
+</body>
+</html>

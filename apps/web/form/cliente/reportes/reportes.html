@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../../../assets/favicon.png" type="image/png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="../../../css/style.css">
+    <title>Reportes de Clientes - Mi Sistema</title>
+</head>
+<body>
+    <div class="contenedor">
+        <nav id="breadcrumb" class="breadcrumb"></nav>
+
+        <section id="reportesCatalogo" class="reportes-catalogo">
+            <div class="reportes-page-header">
+                <h2>Reportes de Clientes</h2>
+            </div>
+
+            <div class="reportes-catalogo-grid">
+                <button type="button" class="reporte-tile" data-reporte="clientes_pdf">
+                    <span class="reporte-tile-icon">
+                        <i class="fa-solid fa-address-book"></i>
+                    </span>
+                    <span class="reporte-tile-content">
+                        <span class="reporte-tile-title">Listado de Reporte</span>
+                        <span class="reporte-tile-text">Listado general de clientes con filtros por fecha de alta.</span>
+                    </span>
+                </button>
+
+                <button type="button" class="reporte-tile" data-reporte="estado_cuenta">
+                    <span class="reporte-tile-icon">
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                    </span>
+                    <span class="reporte-tile-content">
+                        <span class="reporte-tile-title">Estado de Cuenta</span>
+                        <span class="reporte-tile-text">Vista preparada para el estado de cuenta del cliente.</span>
+                    </span>
+                </button>
+            </div>
+        </section>
+
+        <section id="reportesDetalle" class="reportes-layout d-none">
+            <aside class="reportes-filtros-card">
+                <div class="reportes-card-header">
+                    <h3 id="reportesDetalleTitulo">Reporte</h3>
+                </div>
+
+                <div class="reportes-card-body">
+                    <div class="row mb-2">
+                        <div class="col-12">
+                            <label for="reporteFechaDesde">Fecha Desde</label>
+                            <input type="date" id="reporteFechaDesde" class="form-control input-estilizado">
+                        </div>
+                    </div>
+
+                    <div class="row mb-2">
+                        <div class="col-12">
+                            <label for="reporteFechaHasta">Fecha Hasta</label>
+                            <input type="date" id="reporteFechaHasta" class="form-control input-estilizado">
+                        </div>
+                    </div>
+
+                    <div class="reportes-ayuda">
+                        <p id="reportesAyudaTexto">Si dejas las fechas vacías, el reporte incluirá todos los clientes.</p>
+                    </div>
+                </div>
+
+                <div class="reportes-card-footer">
+                    <button type="button" id="btnVolverReportesClientes" class="btn btn-secondary">Volver</button>
+                    <button type="button" id="btnLimpiarReporteClientes" class="btn btn-secondary">Limpiar</button>
+                    <button type="button" id="btnDescargarExcelClientes" class="btn btn-secondary">
+                        <i class="fa-solid fa-file-excel"></i> Descargar Excel
+                    </button>
+                    <button type="button" id="btnGenerarReporteClientes" class="btn btn-primary">
+                        <i class="fa-solid fa-file-lines"></i> Generar
+                    </button>
+                </div>
+            </aside>
+
+            <section class="reportes-visor-card">
+                <div class="reportes-card-header">
+                    <h3>Vista Previa</h3>
+                </div>
+
+                <div class="reportes-card-body reportes-card-body-visor">
+                    <div class="report-viewer-wrap">
+                        <iframe id="visorReporteClientes" class="report-viewer-frame" title="Visor de reporte de clientes"></iframe>
+                        <div id="clienteReporteEmpty" class="report-viewer-empty">
+                            <i class="fa-solid fa-file-pdf"></i>
+                            <h3>Sin vista previa</h3>
+                            <p id="reportesEmptyTexto">Presiona Generar para visualizar el PDF del reporte seleccionado.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </section>
+    </div>
+
+    <script type="module" src="./reportes.js"></script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+services:
+  # ---- Postgres del ADMINISTRADOR: base central de licencias (LicenciasMS) ----
+  db-admin:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${ADMIN_DB_NAME}
+      POSTGRES_USER: ${ADMIN_DB_USER}
+      POSTGRES_PASSWORD: ${ADMIN_DB_PASSWORD}
+    volumes:
+      - dbadmin:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"          # tu Mac:5433 -> contenedor:5432 (DBeaver / restore). Sacar en produccion.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${ADMIN_DB_USER} -d ${ADMIN_DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # ---- Postgres de CLIENTES: bases de los tenants ----
+  db-clientes:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${CLIENTS_DB_NAME}
+      POSTGRES_USER: ${CLIENTS_DB_USER}
+      POSTGRES_PASSWORD: ${CLIENTS_DB_PASSWORD}
+    volumes:
+      - dbclientes:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"          # tu Mac:5434 -> contenedor:5432. Sacar en produccion.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${CLIENTS_DB_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # ---- Backend principal ----
+  api:
+    build: ./apps/api
+    environment:
+      # ConnectionU se conecta a la central (db-admin). Los tenants se resuelven
+      # en runtime con el db_host guardado en la tabla licencias (debe ser 'db-clientes').
+      DB_HOST: db-admin
+      DB_PORT: 5432
+      DB_NAME: ${ADMIN_DB_NAME}
+      DB_USER: ${ADMIN_DB_USER}
+      DB_PASSWORD: ${ADMIN_DB_PASSWORD}
+      JAVA_OPTS: "-Xmx512m"
+    depends_on:
+      db-admin:
+        condition: service_healthy
+      db-clientes:
+        condition: service_healthy
+    ports:
+      - "9095:9095"          # solo desarrollo (Postman). Sacar en produccion.
+    restart: unless-stopped
+
+  # ---- Backend de reportes ----
+  reports:
+    build: ./apps/reports
+    environment:
+      DB_HOST: db-admin
+      DB_PORT: 5432
+      DB_NAME: ${ADMIN_DB_NAME}
+      DB_USER: ${ADMIN_DB_USER}
+      DB_PASSWORD: ${ADMIN_DB_PASSWORD}
+      JAVA_OPTS: "-Xmx768m -Djava.awt.headless=true"
+    depends_on:
+      db-admin:
+        condition: service_healthy
+      db-clientes:
+        condition: service_healthy
+    ports:
+      - "9096:9096"          # solo desarrollo. Sacar en produccion.
+    restart: unless-stopped
+
+  # ---- Front + nginx (unico puerto expuesto al navegador) ----
+  web:
+    build: ./apps/web
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+      - reports
+    restart: unless-stopped
+
+volumes:
+  dbadmin:
+  dbclientes:

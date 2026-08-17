@@ -1,0 +1,8 @@
+Dockerfile
+.dockerignore
+.git/
+.gitignore
+.vscode/
+.trae/
+*.md
+.DS_Store

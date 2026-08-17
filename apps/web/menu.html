@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Sistema</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">   
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="icon" href="assets/favicon.png" type="image/png">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar">
+        <div class="logo">
+            <h2 id="logoText">Mi Sistema</h2>
+            <p id="logoSubtext">Panel de Control</p>
+        </div>
+        <ul id="menu" class="menu">
+
+            <!-- Dashboard -->
+            <li class="menu-item">
+                <a class="menu-link option" data-key="8H3J5N1">
+                    <span class="menu-icon"><i class="fa-solid fa-chart-pie"></i></span>
+                    <span class="menu-text">Dashboard</span>
+                </a>
+            </li>
+
+            <!-- Facturación Venta -->
+            <!-- <li class="menu-item has-submenu">
+                <a class="menu-link">
+                    <span class="menu-icon"><i class="fa-solid fa-file-invoice-dollar"></i></span>
+                    <span class="menu-text">Facturación Venta</span>
+                    <i class="fas fa-chevron-down submenu-arrow"></i>
+                </a>
+                <ul class="submenu">
+                    <li class="submenu-item">
+                        <a class="submenu-link option" data-key="5F2V8A1">
+                            <i class="fas fa-list"></i>
+                            <span>Lista de Facturas</span>
+                        </a>
+                    </li>
+                    <li class="submenu-item">
+                        <a class="submenu-link option" data-key="5F2V8A2">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Nueva Factura</span>
+                        </a>
+                    </li>
+                </ul>
+            </li> -->
+
+            <!-- Clientes  -->
+            <!-- <li class="menu-item has-submenu">
+                <a class="menu-link">
+                    <span class="menu-icon"><i class="fa-solid fa-users"></i></span>
+                    <span class="menu-text">Clientes</span>
+                    <i class="fas fa-chevron-down submenu-arrow"></i>                    
+                </a>
+                <ul class="submenu">
+                    <li class="submenu-item">
+                        <a class="submenu-link option" data-key="7P9Q1R3">
+                            <i class="fas fa-list"></i>
+                            <span>Lista de Clientes</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>   -->
+
+            <!-- Productos -->
+            <!-- <li class="menu-item has-submenu">
+                <a class="menu-link">
+                    <span class="menu-icon"><i class="fa-solid fa-boxes-stacked"></i></span>
+                    <span class="menu-text">Productos</span>
+                    <i class="fas fa-chevron-down submenu-arrow"></i>                    
+                </a>
+                <ul class="submenu">
+                    <li class="submenu-item">
+                        <a class="submenu-link option" data-key="6B8C0D2">
+                            <i class="fas fa-list"></i>
+                            <span>Lista de Productos</span>
+                        </a>
+                    </li>
+                    <li class="submenu-item">
+                        <a class="submenu-link option" data-key="6B8C0D4">
+                            <i class="fa-solid fa-tags"></i>
+                            <span>Clasificación</span>
+                        </a>
+                    </li>                    
+                    <li class="submenu-item">
+                        <a class="submenu-link option" data-key="6B8C0D3">
+                            <i class="fa-solid fa-file-signature"></i>
+                            <span>Ajuste de Stock</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>               -->
+            
+            <!-- Configuración -->
+            <!-- <li class="menu-item has-submenu">
+                <a class="menu-link">
+                    <span class="menu-icon"><i class="fa-solid fa-gears"></i></span>
+                    <span class="menu-text">Configuración</span>
+                    <i class="fas fa-chevron-down submenu-arrow"></i>                    
+                </a>
+                <ul class="submenu">
+                    <li class="submenu-item">
+                        <a class="submenu-link option" data-key="7P9Q1R4">
+                            <i class="fa-solid fa-building"></i>
+                            <span>Empresa</span>
+                        </a>
+                    </li>                    
+                    <li class="submenu-item">
+                        <a class="submenu-link option" data-key="7LOQ1G2">
+                            <i class="fa-solid fa-sliders"></i>
+                            <span>Definiciones</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>  -->
+
+            <!-- Usuarios -->
+            <!-- <li class="menu-item has-submenu">
+                <a class="menu-link">
+                    <span class="menu-icon"><i class="fa-solid fa-user-group"></i></span>
+                    <span class="menu-text">Usuarios</span>
+                    <i class="fas fa-chevron-down submenu-arrow"></i>                    
+                </a>
+                <ul class="submenu">               
+                    <li class="submenu-item">
+                        <a class="submenu-link option" data-key="3S5T7V9">
+                            <i class="fa-solid fa-user-group"></i>
+                            <span>Usuarios del Sistema</span>
+                        </a>
+                    </li>
+                    <li class="submenu-item">
+                        <a class="submenu-link option" data-key="3S5T7V8">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <span>Niveles de Acceso</span>
+                        </a>
+                    </li>                    
+                    <li class="submenu-item">
+                        <a class="submenu-link option" data-key="2H6I8S4">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                            <span>Historial</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>             -->
+
+        </ul>
+    </aside>
+
+    <!-- Top Bar -->
+    <header id="topbar" class="topbar">
+        <div class="topbar-left">
+            <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Contraer menu lateral" aria-controls="sidebar" aria-expanded="true">
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </button>
+            <!-- <div class="search-box">
+                <span class="search-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c200bb" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search-icon lucide-search"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+                </span>
+                <input type="text" placeholder="Buscar...">
+            </div> -->
+        </div>
+        <div class="topbar-right">
+
+            <!-- <div class="notifications">
+                <span style="font-size: 20px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-principal)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon-icon lucide-moon"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+                </span>
+                <span class="notification-badge"></span>
+            </div> -->
+
+            <div class="user-profile" id="userProfile">
+                <div id="avatar" class="user-avatar">JD</div>
+                <div class="user-info">
+                    <span id="username" class="user-name">Juan Pérez</span>
+                    <span id="email" class="user-role">juan.perez@example.com</span>
+                </div>
+                <i class="fas fa-chevron-down user-chevron"></i>
+
+                <!-- Dropdown -->
+                <div class="profile-dropdown" id="profileDropdown">
+                    <div class="dd-header">
+                        <div class="dd-avatar-lg" id="ddAvatar">JD</div>
+                        <div class="dd-user-details">
+                            <div class="dd-name" id="ddName">Juan Pérez</div>
+                            <div class="dd-email" id="ddEmail">juan.perez@example.com</div>
+                            <div class="dd-badge"><i class="fas fa-star" style="font-size:9px"></i> <span id="ddRol">Administrador</span></div>
+                        </div>
+                    </div>
+
+                    <div class="dd-section">
+                        <div class="dd-item" data-key="perfil">
+                            <div class="dd-icon purple"><i class="fa-solid fa-circle-user"></i></div>
+                            <div class="dd-label"><div class="dd-label-text">Mi perfil</div><div class="dd-label-sub">Editar datos personales</div></div>
+                            <i class="fas fa-chevron-right dd-arrow"></i>
+                        </div>
+                        <div class="dd-item" data-key="password" id="btnCambiarPassword">
+                            <div class="dd-icon blue"><i class="fa-solid fa-lock"></i></div>
+                            <div class="dd-label"><div class="dd-label-text">Cambiar contraseña</div><div class="dd-label-sub">Seguridad de la cuenta</div></div>
+                            <i class="fas fa-chevron-right dd-arrow"></i>
+                        </div>
+                        <!-- <div class="dd-item" data-key="2fa">
+                            <div class="dd-icon green"><i class="fa-solid fa-shield-halved"></i></div>
+                            <div class="dd-label"><div class="dd-label-text">Autenticación 2FA</div><div class="dd-label-sub">Verificación en dos pasos</div></div>
+                            <span class="dd-badge-new">NUEVO</span>
+                        </div> -->
+                    </div>
+
+                    <div class="dd-section">
+                        <div class="dd-item" data-key="actividad">
+                            <div class="dd-icon amber"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                            <div class="dd-label"><div class="dd-label-text">Actividad reciente</div><div class="dd-label-sub">Historial de accesos</div></div>
+                            <i class="fas fa-chevron-right dd-arrow"></i>
+                        </div>
+                        <div class="dd-item" data-key="preferencias">
+                            <div class="dd-icon gray"><i class="fa-solid fa-sliders"></i></div>
+                            <div class="dd-label"><div class="dd-label-text">Preferencias</div><div class="dd-label-sub">Notificaciones y apariencia</div></div>
+                            <i class="fas fa-chevron-right dd-arrow"></i>
+                        </div>
+                        <div class="dd-item" data-key="ayuda">
+                            <div class="dd-icon blue2"><i class="fa-solid fa-circle-question"></i></div>
+                            <div class="dd-label"><div class="dd-label-text">Ayuda y soporte</div><div class="dd-label-sub">Documentación del sistema</div></div>
+                            <i class="fas fa-chevron-right dd-arrow"></i>
+                        </div>
+                    </div>
+
+                    <div class="dd-section">
+                        <div class="dd-item dd-logout" id="btnLogout">
+                            <div class="dd-icon red"><i class="fa-solid fa-right-from-bracket"></i></div>
+                            <div class="dd-label"><div class="dd-label-text">Cerrar sesión</div></div>
+                        </div>
+                    </div>
+
+                    <div class="dd-footer">
+                        <div class="dd-version">Mi Sistema v1.0.0 · © 2025</div>
+                    </div>
+                </div>
+            </div>      
+
+        </div>
+    </header>
+
+    <div id="sidebarOverlay" class="sidebar-overlay" aria-hidden="true"></div>
+
+    <!-- iframe Content -->
+    <!-- <main id="mainContent" class="main-content">
+        <iframe id="iframeLayout">
+            
+        </iframe> 
+    </main>    -->
+    <div class="main-content" id="mainContent">
+        <div class="iframe-skeleton" id="iframeSkeleton">
+            <div class="skeleton-header"></div>
+            <div class="skeleton-content"></div>
+        </div>
+        <iframe id="iframeLayout"></iframe>
+    </div>    
+    
+    <script type="module" src="./js/menu.js"></script>
+    
+</body>
+</html>

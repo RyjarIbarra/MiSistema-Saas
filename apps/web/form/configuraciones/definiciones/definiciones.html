@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../../../assets/favicon.png" type="image/png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">   
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="../../../css/style.css">      
+    <title>Document</title>
+</head>
+<body>
+    <div class="contenedor definiciones-contenedor">
+        <nav id="breadcrumb" class="breadcrumb"></nav>
+        <div class="tim-card definiciones-card">
+
+            <div class="config-header">
+                <div class="tabs">
+                    <div class="tab active" data-tabnom="timbrado">
+                        <p>Timbrados</p>
+                    </div>
+                    <div class="tab" data-tabnom="sucursal">
+                        <p>Sucursal</p>
+                    </div>
+                    <div class="tab" data-tabnom="caja">
+                        <p>Cajas</p>
+                    </div>
+                    <div class="tab" data-tabnom="deposito">
+                        <p>Deposito</p>
+                    </div>
+                    <div class="tab" data-tabnom="moneda">
+                        <p>Moneda</p> 
+                    </div>
+                    <div class="tab" data-tabnom="unidad">
+                        <p>Uni. medida</p>
+                    </div>
+                    <div class="tab" data-tabnom="tipoPrecio">
+                        <p>Tipo Precio</p>
+                    </div>                    
+                </div>
+            </div>
+
+            <!-- Contenidos de cada tab -->
+            <div class="tab-contents definiciones-tab-contents">
+
+                <!-- Timbrado -->
+                <div id="tab-timbrado" class="tab-content active">
+                    <div class="modal-body">
+                        <form id="timbradoForm">
+                            <div class="row g-3">
+                                
+                                <!-- Primera fila -->
+                                <div class="col-12 col-sm-6 col-md-4 col-xl-3">
+                                    <label for="timtipdoc" class="form-label">Tipo Documento</label>
+                                    <select id="timtipdoc" class="form-select input-estilizado" data-required="true">
+                                        <option value="">Seleccionar...</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-12 col-sm-6 col-md-4 col-xl-2">
+                                    <label for="timnumero" class="form-label">Timbrado *</label>
+                                    <input type="text" id="timnumero" class="form-control input-estilizado" placeholder="Ej: 12345678" autocomplete="off" data-required="true" data-tipo="numero" data-longitud="8" data-nombre="Timbrado" maxlength="8">
+                                </div>
+
+                                <div class="col-12 col-sm-6 col-md-4 col-xl-2">
+                                    <label for="timfecini" class="form-label">Fecha Inicio *</label>
+                                    <input type="date" id="timfecini" class="form-control input-estilizado" data-required="true">
+                                </div>                                     
+
+                                <div class="col-12 col-sm-6 col-md-4 col-xl-2">
+                                    <label for="timmodalid" class="form-label">Modalidad *</label>
+                                    <select id="timmodalid" class="form-select input-estilizado" data-required="true">
+                                        <option value="P">Preimpreso</option>
+                                        <option value="A">Autoimpresor</option>
+                                        <option value="E">Electrónico</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-12 col-sm-6 col-md-4 col-xl-2">
+                                    <label for="timfecvto" class="form-label">Fecha Venc.</label>
+                                    <input type="date" id="timfecvto" class="form-control input-estilizado" data-required="true">
+                                </div>                        
+                                
+                                <!-- Segunda fila -->
+                                <div class="col-6 col-md-3 col-xl-2">
+                                    <label for="timestab" class="form-label">Sucursal *</label>
+                                    <input type="text" id="timestab" class="form-control input-estilizado" placeholder="Ej: 001" autocomplete="off" data-required="true" data-tipo="numero" data-longitud-timbrado="3" data-nombre="Sucursal" maxlength="3">
+                                </div>
+                                
+                                <div class="col-6 col-md-3 col-xl-2">
+                                    <label for="timpunexp" class="form-label">Punto de Expedición *</label>
+                                    <input type="text" id="timpunexp" class="form-control input-estilizado" placeholder="Ej: 001" autocomplete="off" data-required="true" data-tipo="numero" data-longitud-timbrado="3" data-nombre="Punto de Expedición" maxlength="3">
+                                </div>
+                                
+                                <div class="col-6 col-md-3 col-xl-2">
+                                    <label for="timnrodesde" class="form-label">Nº Desde *</label>
+                                    <input type="text" id="timnrodesde" class="form-control input-estilizado" placeholder="Ej: 0000001" autocomplete="off" data-required="true" data-tipo="numero" data-longitud-timbrado="7" data-nombre="Nº Desde" maxlength="7">
+                                </div>
+                                
+                                <div class="col-6 col-md-3 col-xl-2">
+                                    <label for="timnrohasta" class="form-label">Nº Hasta *</label>
+                                    <input type="text" id="timnrohasta" class="form-control input-estilizado" placeholder="Ej: 0000010" autocomplete="off" data-required="true" data-tipo="numero" data-longitud-timbrado="7" data-nombre="Nº Hasta" maxlength="7">
+                                </div>
+
+                                <div class="col-12 col-md-3 col-xl-2" style="display: flex; justify-content: start; align-items: end;">
+                                    <button type="button" class="btn-primary" id="btnAgregar">
+                                        <i class="fa-solid fa-plus"></i> Agregar
+                                    </button>
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+                    <div class="table-config-card">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr class="sm">
+                                        <th >ID</th>
+                                        <th >Documento</th>
+                                        <th >Timbrado</th>
+                                        <th >Fecha Inicio</th>
+                                        <th >Fecha Venc.</th>
+                                        <th >Sucursal</th>
+                                        <th >Punto Exp.</th>
+                                        <th >Nº Desde</th>
+                                        <th >Nº Hasta</th>                                                   
+                                        <th >A Utilizar</th>
+                                        <th style="text-align: center;">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="timbradosTableBody">
+
+                                </tbody>
+                            </table>
+                        </div>            
+                    </div>
+                </div>
+                
+                <!-- Sucursal -->
+                <div id="tab-sucursal" class="tab-content">
+                    <div class="modal-body">
+                        <form id="SucursalForm">
+                            <div class="row g-3">
+                                <!-- Primera fila -->
+                                
+                                <div class="col-12 col-sm-6 col-md-3 col-xl-3">
+                                    <label for="sucnom" class="form-label">Denominación *</label>
+                                    <input type="text" id="sucnom" class="form-control input-estilizado" placeholder="Ej: Casa Central" autocomplete="off" data-required="true">
+                                </div>
+
+                                <div class="col-12 col-sm-6 col-md-3 col-xl-2">
+                                    <label for="sucest" class="form-label">Establecimiento (DNIT) *</label>
+                                    <input type="text" id="sucest" class="form-control input-estilizado" placeholder="Ej: 001" autocomplete="off" data-longitud="3" data-required="true" maxlength="3" data-nombre="Establecimiento (DNIT)">
+                                </div>                                
+
+                                <div class="col-12 col-sm-6 col-md-3 col-xl-3">
+                                    <label for="sucdir" class="form-label">Dirección</label>
+                                    <input type="text" id="sucdir" class="form-control input-estilizado" placeholder="Ej: Calle 11" autocomplete="off">
+                                </div>                        
+                                                                
+                                <div class="col-12 col-sm-6 col-md-3 col-xl-2">
+                                    <label for="suctel" class="form-label">Telefono</label>
+                                    <input type="text" id="suctel" class="form-control input-estilizado" placeholder="Ej: 021 123 456" autocomplete="off">
+                                </div>                                    
+
+                                <div class="col-12 col-sm-6 col-md-3 col-xl-2" style="display: flex; justify-content: start; align-items: end;">
+                                    <button type="button" class="btn-primary" id="btnAgregarSuc">
+                                        <i class="fa-solid fa-plus"></i> Agregar
+                                    </button>
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+                    <div class="table-config-card">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr class="sm">
+                                        <th>Estab.</th>
+                                        <th>Denominación</th>
+                                        <th>Establecimiento</th>
+                                        <th>Dirección</th>
+                                        <th>Telefono</th>                                                  
+                                        <th style="text-align: center;">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sucursalTableBody">
+
+                                </tbody>
+                            </table>
+                        </div>            
+                    </div>                    
+                </div>
+
+                <!-- Caja -->
+                <div id="tab-caja" class="tab-content">
+                    <div class="modal-body">
+                        <form id="CajaForm">
+                            <div class="row g-3">
+                                <div class="col-12 col-sm-6 col-md-3 col-xl-3">
+                                    <label for="cajsucest" class="form-label">Sucursal *</label>
+                                    <select id="cajsucest" class="form-select input-estilizado" data-required="true"></select>
+                                </div>
+
+                                <div class="col-12 col-sm-6 col-md-3 col-xl-3">
+                                    <label for="cajnombre" class="form-label">Denominación *</label>
+                                    <input type="text" id="cajnombre" class="form-control input-estilizado" placeholder="Ej: Caja 1" autocomplete="off" data-required="true">
+                                </div>
+
+                                <div class="col-12 col-sm-6 col-md-3 col-xl-3">
+                                    <label for="cajpuntoexp" class="form-label">Punto Exp. (DNIT)*</label>
+                                    <input type="text" id="cajpuntoexp" class="form-control input-estilizado" placeholder="Ej: 001" autocomplete="off" maxlength="3" data-required="true" data-tipo="numero" data-longitud="3" data-nombre="Punto de Expedicion">
+                                </div>
+
+                                <div class="col-sm-6 col-md-3 col-xl-3" style="display: flex; justify-content: start; align-items: end;">
+                                    <button type="button" class="btn-primary" id="btnAgregarCaja">
+                                        <i class="fa-solid fa-plus"></i> Agregar
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="table-config-card">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr class="sm">
+                                        <th>Suc. / Punto</th>
+                                        <th>Sucursal</th>
+                                        <th>Caja</th>
+                                        <th>Punto Exp.</th>
+                                        <th>Estado</th>
+                                        <th style="text-align: center;">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cajaTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deposito -->
+                <div id="tab-deposito" class="tab-content">
+                    <div class="modal-body">
+                        <form id="DepositoForm">
+                            <div class="row g-3">                                
+                                
+                                <div class="col-12 col-sm-6 col-md-3 col-xl-3">
+                                    <label for="timbrado" class="form-label">Denominación *</label>
+                                    <input type="text" id="depnom" class="form-control input-estilizado" placeholder="Ej: Casa Central" autocomplete="off" data-required="true">
+                                </div>
+
+                                <div class="col-12 col-sm-6 col-md-3 col-xl-3">
+                                    <label for="depdir" class="form-label">Dirección</label>
+                                    <input type="text" id="depdir" class="form-control input-estilizado" placeholder="Ej: Calle 11" autocomplete="off">
+                                </div>                        
+                                                                
+                                <div class="col-12 col-sm-6 col-md-3 col-xl-3">
+                                    <label for="deptel" class="form-label">Telefono</label>
+                                    <input type="text" id="deptel" class="form-control input-estilizado" placeholder="Ej: 021 123 456" autocomplete="off">
+                                </div>                                    
+
+                                <div class="col-sm-6 col-md-3 col-xl-3" style="display: flex; justify-content: start; align-items: end;">
+                                    <button type="button" class="btn-primary" id="btnAgregarDep">
+                                        <i class="fa-solid fa-plus"></i> Agregar
+                                    </button>
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+                    <div class="table-config-card">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr class="sm">
+                                        <th>ID</th>
+                                        <th>Denominación</th>
+                                        <th>Dirección</th>
+                                        <th>Telefono</th>                                                  
+                                        <th style="text-align: center;">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="depositoTableBody">
+
+                                </tbody>
+                            </table>
+                        </div>            
+                    </div>                    
+                </div>                
+                
+                <!-- Moneda -->
+                <div id="tab-moneda" class="tab-content">
+                    <div class="modal-body">
+                        <div class="row g-3 justify-content-end">
+                            <div class="col-12 col-md-2 col-xl-2 d-flex justify-content-end align-items-end">
+                                <button type="button" class="btn btn-secondary w-100" id="btnBuscarMoneda" title="Buscar moneda">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-config-card">
+                        <div class="col-12">
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr class="sm">
+                                            <th>Código</th>
+                                            <th>Descripción</th>
+                                            <th>Símbolo</th>
+                                            <th>Decimales</th>
+                                            <th>Estado</th>
+                                            <th style="text-align: center;">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="monedaTableBody">
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>            
+                    </div>                    
+                </div>
+
+                <!-- Unidad de Medida -->
+                <div id="tab-unidad" class="tab-content">
+                    <div class="modal-body">
+                        <div class="row g-3 justify-content-end">
+                            <div class="col-12 col-md-2 col-xl-2 d-flex justify-content-end align-items-end">
+                                <button type="button" class="btn btn-secondary w-100" id="btnBuscarUnidad" title="Buscar unidad">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-config-card">
+                        <div class="col-12 col-md-12 col-xl-12">
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr class="sm">
+                                            <th>Código</th>
+                                            <th>Descripción</th>
+                                            <th>Abreviatura</th>
+                                            <th style="text-align: center;">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="unidadTableBody">
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>            
+                    </div>                    
+                </div>                
+
+                <!-- Tipo Precio -->
+                <div id="tab-tipoPrecio" class="tab-content">
+                    <div class="modal-body">
+                        <form id="TipoPrecioForm">
+                            <div class="row g-3">                                     
+                                
+                                <div class="col-12 col-md-3 col-xl-3">
+                                    <label for="tipnom" class="form-label">Tipo Precio *</label>
+                                    <input type="text" id="tipnom" class="form-control input-estilizado" placeholder="Ej: Casual" autocomplete="off" data-required="true" data-tipo="texto" data-nombre="Tipo Precio">
+                                </div>                                  
+
+                                <div class="col-12 col-sm-6 col-md-3 col-xl-3" style="display: flex; justify-content: start; align-items: end;">
+                                    <button type="button" class="btn-primary" id="btnAgregarTipoPrecio">
+                                        <i class="fa-solid fa-plus"></i> Agregar
+                                    </button>
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+                    <div class="table-config-card">
+                        <div class="col-12 col-md-8 col-xl-6">
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr class="sm">
+                                            <th >ID</th>
+                                            <th >Tipo Precio</th>                                                                                                      
+                                            <th style="text-align: center;">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tipoPrecioTableBody">
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>            
+                    </div>                    
+                </div>
+
+            </div>            
+
+        </div>        
+    </div>
+
+    <div id="monedaCatalogoModal" class="modal">
+        <div class="modal-content modal-content-vw modal-content-catalog vw-80">
+            <div class="modal-header">
+                <h2 class="tituloform">Catálogo de Monedas</h2>
+                <button type="button" id="btnCloseMonedaCatalogo" class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3 mb-2">
+                    <div class="col-12 col-md-8">
+                        <label for="monedaCatalogoBuscar" class="form-label">Buscar por código, descripción o país</label>
+                        <input type="text" id="monedaCatalogoBuscar" class="form-control input-estilizado" autocomplete="off">
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <label for="monedaCatalogoTipo" class="form-label">Filtro</label>
+                        <select id="monedaCatalogoTipo" class="form-select input-estilizado">
+                            <option value="todas">Todas</option>
+                            <option value="comunes">Más usadas</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-container table-container-catalog">
+                    <table>
+                        <thead>
+                            <tr class="sm">
+                                <th>Código</th>
+                                <th>Descripción</th>
+                                <th>Símbolo</th>
+                                <th>Decimales</th>
+                                <th>País</th>
+                            </tr>
+                        </thead>
+                        <tbody id="monedaCatalogoTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="unidadCatalogoModal" class="modal">
+        <div class="modal-content modal-content-vw modal-content-catalog vw-80">
+            <div class="modal-header">
+                <h2 class="tituloform">Catálogo de Unidades de Medida</h2>
+                <button type="button" id="btnCloseUnidadCatalogo" class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3 mb-2">
+                    <div class="col-12">
+                        <label for="unidadCatalogoBuscar" class="form-label">Buscar por código, descripción o abreviatura</label>
+                        <input type="text" id="unidadCatalogoBuscar" class="form-control input-estilizado" autocomplete="off">
+                    </div>
+                </div>
+                <div class="table-container table-container-catalog">
+                    <table>
+                        <thead>
+                            <tr class="sm">
+                                <th>Código</th>
+                                <th>Descripción</th>
+                                <th>Abreviatura</th>
+                            </tr>
+                        </thead>
+                        <tbody id="unidadCatalogoTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="./definiciones.js"></script>
+</body>
+</html>

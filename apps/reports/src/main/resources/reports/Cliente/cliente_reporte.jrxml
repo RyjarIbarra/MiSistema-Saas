@@ -1,0 +1,84 @@
+<!-- Created with Jaspersoft Studio version 7.0.6.final using JasperReports Library version 7.0.6-5d2a603fdc6b3db8f842a83383e594f41891534d  -->
+<jasperReport name="cliente_reporte" language="java" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="f19fc9c9-e8c7-4721-b6af-b4faa4c5c6be">
+	<parameter name="fechaDesde" forPrompting="false" class="java.time.LocalDate">
+		<defaultValueExpression><![CDATA[null]]></defaultValueExpression>
+	</parameter>
+	<parameter name="fechaHasta" forPrompting="false" class="java.time.LocalDate">
+		<defaultValueExpression><![CDATA[null]]></defaultValueExpression>
+	</parameter>
+	<field name="cliid" class="java.lang.Long"/>
+	<field name="cliruc" class="java.lang.String"/>
+	<field name="clinom" class="java.lang.String"/>
+	<field name="clitel" class="java.lang.String"/>
+	<field name="climail" class="java.lang.String"/>
+	<field name="clidir" class="java.lang.String"/>
+	<field name="clifec" class="java.time.LocalDateTime"/>
+	<title height="60">
+		<element kind="staticText" uuid="809fffcb-8ecc-4462-90d4-feddda55675d" x="0" y="0" width="555" height="30" fontSize="18.0" bold="true" hTextAlign="Center">
+			<text><![CDATA[Reporte de Clientes]]></text>
+		</element>
+		<element kind="textField" uuid="4fd604e4-2cb0-42d3-8cec-c58134fcb544" x="0" y="35" width="555" height="15" fontSize="9.0" blankWhenNull="true" italic="true" hTextAlign="Center">
+			<expression><![CDATA["Rango: " +
+                    ($P{fechaDesde} == null ? "sin fecha desde" : $P{fechaDesde}.toString()) +
+                    " a " +
+                    ($P{fechaHasta} == null ? "sin fecha hasta" : $P{fechaHasta}.toString())]]></expression>
+		</element>
+	</title>
+	<columnHeader height="22">
+		<element kind="line" uuid="d9608048-cb81-4d9e-873a-3aadc2427fc5" x="0" y="21" width="555" height="1"/>
+		<element kind="staticText" uuid="9f358d58-c362-4007-86f4-52373473dc95" x="0" y="2" width="35" height="18" bold="true">
+			<text><![CDATA[ID]]></text>
+		</element>
+		<element kind="staticText" uuid="2bdd9c67-ff81-473c-9ab2-0568bb2b3d49" x="35" y="2" width="85" height="18" bold="true">
+			<text><![CDATA[RUC]]></text>
+		</element>
+		<element kind="staticText" uuid="3b28d967-0ef5-4d7a-825d-a371d8ccbaef" x="120" y="2" width="170" height="18" bold="true">
+			<text><![CDATA[Nombre]]></text>
+		</element>
+		<element kind="staticText" uuid="ff4a2b21-7191-40e5-aa31-52cba3bd9e63" x="290" y="2" width="90" height="18" bold="true">
+			<text><![CDATA[Telefono]]></text>
+		</element>
+		<element kind="staticText" uuid="86380c5f-83a1-4619-8556-5aa89e16ad15" x="380" y="2" width="90" height="18" bold="true">
+			<text><![CDATA[Email]]></text>
+		</element>
+		<element kind="staticText" uuid="98f1a88c-ff93-4656-b461-742501a0985d" x="470" y="2" width="85" height="18" bold="true" hTextAlign="Right">
+			<text><![CDATA[Alta]]></text>
+		</element>
+	</columnHeader>
+	<detail>
+		<band height="18">
+			<element kind="textField" uuid="71d0c0e9-eed3-467a-9540-ac096c2809ac" x="0" y="0" width="35" height="18">
+				<expression><![CDATA[$F{cliid}]]></expression>
+			</element>
+			<element kind="textField" uuid="553a60d5-def9-4fff-b7f4-879693c67813" x="35" y="0" width="85" height="18" blankWhenNull="true">
+				<expression><![CDATA[$F{cliruc}]]></expression>
+			</element>
+			<element kind="textField" uuid="40a82219-2562-45fa-8f76-7b38e27ccec4" x="120" y="0" width="170" height="18" blankWhenNull="true">
+				<expression><![CDATA[$F{clinom}]]></expression>
+			</element>
+			<element kind="textField" uuid="9c990bc1-1548-41f5-b3dd-fd75da838f4f" x="290" y="0" width="90" height="18" blankWhenNull="true">
+				<expression><![CDATA[$F{clitel}]]></expression>
+			</element>
+			<element kind="textField" uuid="d990b69a-5fb6-4775-b3d4-4b88bd601a1b" x="380" y="0" width="90" height="18" blankWhenNull="true">
+				<expression><![CDATA[$F{climail}]]></expression>
+			</element>
+			<element kind="textField" uuid="0db30536-2c37-423e-98fd-3b196697e526" x="470" y="0" width="85" height="18" blankWhenNull="true" hTextAlign="Right">
+				<expression><![CDATA[$F{clifec} == null ? null : $F{clifec}.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"))]]></expression>
+			</element>
+		</band>
+	</detail>
+	<pageFooter height="20">
+		<element kind="line" uuid="74f88b52-26ac-4bdc-a51e-964ba452fcec" x="0" y="0" width="555" height="1"/>
+		<element kind="textField" uuid="4906c595-2a42-4068-a7e6-2d6e4489dd5e" x="0" y="4" width="277" height="15" fontSize="8.0">
+			<expression><![CDATA["Generado: " + new java.util.Date()]]></expression>
+		</element>
+		<element kind="textField" uuid="ec093ef0-980c-4a94-9b8b-ae21f44f733a" x="278" y="4" width="277" height="15" fontSize="8.0" hTextAlign="Right">
+			<expression><![CDATA["Pagina " + $V{PAGE_NUMBER}]]></expression>
+		</element>
+	</pageFooter>
+	<noData height="30">
+		<element kind="staticText" uuid="82a7f3f0-f8d3-4ab7-88ed-91ed7d91239d" x="0" y="10" width="555" height="20" italic="true" hTextAlign="Center">
+			<text><![CDATA[Sin clientes para el rango seleccionado.]]></text>
+		</element>
+	</noData>
+</jasperReport>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../../../assets/favicon.png" type="image/png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="../../../css/style.css">
+    <title>Clasificación de Productos</title>
+</head>
+<body>
+    <div class="contenedor">
+        <nav id="breadcrumb" class="breadcrumb"></nav>
+        <div class="tim-card">
+            <div class="config-header">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div class="tabs">
+                        <div class="tab active" data-tabnom="familia">
+                            <p>Familia</p>
+                        </div>
+                        <div class="tab" data-tabnom="categoria">
+                            <p>Categoría</p>
+                        </div>
+                        <div class="tab" data-tabnom="marca">
+                            <p>Marcas</p>
+                        </div>
+                        <div class="tab" data-tabnom="ubicacion">
+                            <p>Ubicación</p>
+                        </div>
+                    </div>
+                    <div class="info-note me-2">
+                        <button
+                            type="button"
+                            class="info-note-button"
+                            aria-label="Información sobre familias, categorías y marcas"
+                        >
+                            <i class="fa-solid fa-circle-info"></i>
+                        </button>
+                        <div class="info-note-tooltip" style="width: 420px; left: auto; right: 0;">
+                            <span class="info-note-bullet">*</span>
+                            Familia es la clasificación más amplia y estructural, normalmente ligada al tipo de negocio o a la naturaleza del producto. Por ejemplo: "Bebidas", "Limpieza", "Ferretería". Es la división de más alto nivel y suele usarse para reportes gerenciales y para organizar el catálogo a grandes rasgos.
+                            <br><br>
+                            <span class="info-note-bullet">*</span>
+                            Categoría es una subdivisión dentro de la familia, más específica. Dentro de "Bebidas" podrías tener "Gaseosas", "Aguas", "Jugos". Es la que más se usa para filtrar y navegar el catálogo en el día a día.
+                            <br><br>
+                            <span class="info-note-bullet">*</span>
+                            Marca es independiente de las dos anteriores: identifica al fabricante o la línea comercial (Coca-Cola, Pepsi, Bagley). Una misma marca puede tener productos en varias familias y categorías distintas.
+                            <br><br>
+                            <span class="info-note-bullet">*</span>
+                            La clave es esta: familia y categoría suelen tener una relación jerárquica entre sí (familia → categoría → producto), mientras que la marca corre por un eje totalmente separado.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-contents">
+                <div id="tab-familia" class="tab-content active">
+                    <div class="modal-body">
+                        <form id="familiaForm">
+                            <div class="row g-3">
+                                <div class="col-12 col-md-4 col-xl-4">
+                                    <label for="familiaNombre" class="form-label">Familia *</label>
+                                    <input type="text" id="familiaNombre" class="form-control input-estilizado" placeholder="Ej: Bebidas" autocomplete="off" data-required="true">
+                                </div>
+                                <div class="col-12 col-md-5 col-xl-5">
+                                    <label for="familiaDescripcion" class="form-label">Descripción</label>
+                                    <input type="text" id="familiaDescripcion" class="form-control input-estilizado" placeholder="Descripción de la familia" autocomplete="off">
+                                </div>
+                                <div class="col-12 col-md-3 col-xl-3" style="display: flex; justify-content: start; align-items: end;">
+                                    <button type="button" class="btn-primary" id="btnAgregarFamilia">
+                                        <i class="fa-solid fa-plus"></i> Agregar
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="table-config-card">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr class="sm">
+                                        <th>ID</th>
+                                        <th>Familia</th>
+                                        <th>Descripción</th>
+                                        <th style="text-align: center;">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="familiaTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-categoria" class="tab-content">
+                    <div class="modal-body">
+                        <form id="categoriaForm">
+                            <div class="row g-3">
+                                <div class="col-12 col-md-3 col-xl-3">
+                                    <label for="categoriaFamilia" class="form-label">Familia *</label>
+                                    <select id="categoriaFamilia" class="form-select input-estilizado" data-required="true">
+                                        <option value="">Seleccionar...</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 col-md-3 col-xl-3">
+                                    <label for="categoriaNombre" class="form-label">Categoría *</label>
+                                    <input type="text" id="categoriaNombre" class="form-control input-estilizado" placeholder="Ej: Gaseosas" autocomplete="off" data-required="true">
+                                </div>
+                                <div class="col-12 col-md-4 col-xl-4">
+                                    <label for="categoriaDescripcion" class="form-label">Descripción</label>
+                                    <input type="text" id="categoriaDescripcion" class="form-control input-estilizado" placeholder="Descripción de la categoría" autocomplete="off">
+                                </div>
+                                <div class="col-12 col-md-2 col-xl-2" style="display: flex; justify-content: start; align-items: end;">
+                                    <button type="button" class="btn-primary" id="btnAgregarCategoria">
+                                        <i class="fa-solid fa-plus"></i> Agregar
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="table-config-card">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr class="sm">
+                                        <th>ID</th>
+                                        <th>Familia</th>
+                                        <th>Categoría</th>
+                                        <th>Descripción</th>
+                                        <th style="text-align: center;">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="categoriaTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-marca" class="tab-content">
+                    <div class="modal-body">
+                        <form id="marcaForm">
+                            <div class="row g-3">
+                                <div class="col-12 col-md-4 col-xl-4">
+                                    <label for="marcaNombre" class="form-label">Marca *</label>
+                                    <input type="text" id="marcaNombre" class="form-control input-estilizado" placeholder="Ej: Coca-Cola" autocomplete="off" data-required="true">
+                                </div>
+                                <div class="col-12 col-md-5 col-xl-5">
+                                    <label for="marcaDescripcion" class="form-label">Descripción *</label>
+                                    <input type="text" id="marcaDescripcion" class="form-control input-estilizado" placeholder="Descripción de la marca" autocomplete="off">
+                                </div>
+                                <div class="col-12 col-md-3 col-xl-3" style="display: flex; justify-content: start; align-items: end;">
+                                    <button type="button" class="btn-primary" id="btnAgregarMarca">
+                                        <i class="fa-solid fa-plus"></i> Agregar
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="table-config-card">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr class="sm">
+                                        <th>ID</th>
+                                        <th>Marca</th>
+                                        <th>Descripción</th>
+                                        <th style="text-align: center;">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="marcaTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-ubicacion" class="tab-content">
+                    <div class="modal-body">
+                        <form id="ubicacionForm">
+                            <div class="row g-3">
+                                <div class="col-12 col-md-2 col-xl-2">
+                                    <label for="ubicacionCodigo" class="form-label">Código</label>
+                                    <input type="text" id="ubicacionCodigo" class="form-control input-estilizado" placeholder="Ej: EST-01" autocomplete="off">
+                                </div>
+                                <div class="col-12 col-md-4 col-xl-4">
+                                    <label for="ubicacionNombre" class="form-label">Ubicación *</label>
+                                    <input type="text" id="ubicacionNombre" class="form-control input-estilizado" placeholder="Ej: Estante 1" autocomplete="off" data-required="true">
+                                </div>
+                                <div class="col-12 col-md-4 col-xl-4">
+                                    <label for="ubicacionDescripcion" class="form-label">Referencia *</label>
+                                    <input type="text" id="ubicacionDescripcion" class="form-control input-estilizado" placeholder="Ej: Pasillo A - Nivel 2" autocomplete="off" data-required="true">
+                                </div>
+                                <div class="col-12 col-md-2 col-xl-2" style="display: flex; justify-content: start; align-items: end;">
+                                    <button type="button" class="btn-primary" id="btnAgregarUbicacion">
+                                        <i class="fa-solid fa-plus"></i> Agregar
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="table-config-card">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr class="sm">
+                                        <th>ID</th>
+                                        <th>Código</th>
+                                        <th>Ubicación</th>
+                                        <th>Referencia</th>
+                                        <th style="text-align: center;">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ubicacionTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="./clasificaciones.js"></script>
+</body>
+</html>

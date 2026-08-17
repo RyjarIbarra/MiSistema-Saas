@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport name="producto_detalle" language="java" pageWidth="842" pageHeight="595"
+              whenNoDataType="AllSectionsNoDetail" columnWidth="802"
+              leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20"
+              uuid="b0000000-0000-0000-0000-000000000000">
+
+    <parameter name="filtroTexto" forPrompting="false" class="java.lang.String">
+        <defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+    </parameter>
+    <parameter name="filtroActivo" forPrompting="false" class="java.lang.Boolean">
+        <defaultValueExpression><![CDATA[null]]></defaultValueExpression>
+    </parameter>
+
+    <field name="proid" class="java.lang.Long"/>
+    <field name="gtin" class="java.lang.String"/>
+    <field name="prodesc" class="java.lang.String"/>
+    <field name="tipoProducto" class="java.lang.String"/>
+    <field name="unidad" class="java.lang.String"/>
+    <field name="categoria" class="java.lang.String"/>
+    <field name="familia" class="java.lang.String"/>
+    <field name="marca" class="java.lang.String"/>
+    <field name="ubicacion" class="java.lang.String"/>
+    <field name="tasaIva" class="java.lang.Double"/>
+    <field name="ctrlstock" class="java.lang.Boolean"/>
+    <field name="activo" class="java.lang.Boolean"/>
+    <field name="proobs" class="java.lang.String"/>
+
+    <title height="60">
+        <element kind="staticText" uuid="b0000000-0000-0000-0000-000000000001"
+                 x="0" y="0" width="802" height="30" fontSize="18.0" bold="true" hTextAlign="Center">
+            <text><![CDATA[Listado Detallado de Productos]]></text>
+        </element>
+        <element kind="textField" uuid="b0000000-0000-0000-0000-000000000002"
+                 x="0" y="35" width="802" height="15" fontSize="9.0" italic="true"
+                 blankWhenNull="true" hTextAlign="Center">
+            <expression><![CDATA[
+                "Filtros:" +
+                ($P{filtroTexto} == null || $P{filtroTexto}.isEmpty() ? " (sin busqueda)" : " busqueda='" + $P{filtroTexto} + "'") +
+                " | Activo=" + ($P{filtroActivo} == null ? "todos" : ($P{filtroActivo} ? "solo activos" : "solo inactivos"))
+            ]]></expression>
+        </element>
+    </title>
+
+    <columnHeader height="22">
+        <element kind="line" uuid="b0000000-0000-0000-0000-000000000010"
+                 x="0" y="21" width="802" height="1"/>
+        <element kind="staticText" uuid="b0000000-0000-0000-0000-000000000011"
+                 x="0" y="2" width="30" height="18" bold="true" fontSize="9.0">
+            <text><![CDATA[ID]]></text>
+        </element>
+        <element kind="staticText" uuid="b0000000-0000-0000-0000-000000000012"
+                 x="30" y="2" width="85" height="18" bold="true" fontSize="9.0">
+            <text><![CDATA[GTIN]]></text>
+        </element>
+        <element kind="staticText" uuid="b0000000-0000-0000-0000-000000000013"
+                 x="115" y="2" width="185" height="18" bold="true" fontSize="9.0">
+            <text><![CDATA[Descripcion]]></text>
+        </element>
+        <element kind="staticText" uuid="b0000000-0000-0000-0000-000000000014"
+                 x="300" y="2" width="60" height="18" bold="true" fontSize="9.0">
+            <text><![CDATA[Tipo]]></text>
+        </element>
+        <element kind="staticText" uuid="b0000000-0000-0000-0000-000000000015"
+                 x="360" y="2" width="60" height="18" bold="true" fontSize="9.0">
+            <text><![CDATA[Unidad]]></text>
+        </element>
+        <element kind="staticText" uuid="b0000000-0000-0000-0000-000000000016"
+                 x="420" y="2" width="90" height="18" bold="true" fontSize="9.0">
+            <text><![CDATA[Categoria]]></text>
+        </element>
+        <element kind="staticText" uuid="b0000000-0000-0000-0000-000000000017"
+                 x="510" y="2" width="80" height="18" bold="true" fontSize="9.0">
+            <text><![CDATA[Familia]]></text>
+        </element>
+        <element kind="staticText" uuid="b0000000-0000-0000-0000-000000000018"
+                 x="590" y="2" width="80" height="18" bold="true" fontSize="9.0">
+            <text><![CDATA[Marca]]></text>
+        </element>
+        <element kind="staticText" uuid="b0000000-0000-0000-0000-000000000019"
+                 x="670" y="2" width="50" height="18" bold="true" fontSize="9.0" hTextAlign="Right">
+            <text><![CDATA[IVA %]]></text>
+        </element>
+        <element kind="staticText" uuid="b0000000-0000-0000-0000-00000000001a"
+                 x="720" y="2" width="45" height="18" bold="true" fontSize="9.0" hTextAlign="Center">
+            <text><![CDATA[Ctrl.S]]></text>
+        </element>
+        <element kind="staticText" uuid="b0000000-0000-0000-0000-00000000001b"
+                 x="765" y="2" width="37" height="18" bold="true" fontSize="9.0" hTextAlign="Center">
+            <text><![CDATA[Activo]]></text>
+        </element>
+    </columnHeader>
+
+    <detail>
+        <band height="18">
+            <element kind="textField" uuid="b0000000-0000-0000-0000-000000000020"
+                     x="0" y="0" width="30" height="18" fontSize="9.0">
+                <expression><![CDATA[$F{proid}]]></expression>
+            </element>
+            <element kind="textField" uuid="b0000000-0000-0000-0000-000000000021"
+                     x="30" y="0" width="85" height="18" fontSize="9.0" blankWhenNull="true">
+                <expression><![CDATA[$F{gtin}]]></expression>
+            </element>
+            <element kind="textField" uuid="b0000000-0000-0000-0000-000000000022"
+                     x="115" y="0" width="185" height="18" fontSize="9.0" blankWhenNull="true">
+                <expression><![CDATA[$F{prodesc}]]></expression>
+            </element>
+            <element kind="textField" uuid="b0000000-0000-0000-0000-000000000023"
+                     x="300" y="0" width="60" height="18" fontSize="9.0" blankWhenNull="true">
+                <expression><![CDATA[$F{tipoProducto}]]></expression>
+            </element>
+            <element kind="textField" uuid="b0000000-0000-0000-0000-000000000024"
+                     x="360" y="0" width="60" height="18" fontSize="9.0" blankWhenNull="true">
+                <expression><![CDATA[$F{unidad}]]></expression>
+            </element>
+            <element kind="textField" uuid="b0000000-0000-0000-0000-000000000025"
+                     x="420" y="0" width="90" height="18" fontSize="9.0" blankWhenNull="true">
+                <expression><![CDATA[$F{categoria}]]></expression>
+            </element>
+            <element kind="textField" uuid="b0000000-0000-0000-0000-000000000026"
+                     x="510" y="0" width="80" height="18" fontSize="9.0" blankWhenNull="true">
+                <expression><![CDATA[$F{familia}]]></expression>
+            </element>
+            <element kind="textField" uuid="b0000000-0000-0000-0000-000000000027"
+                     x="590" y="0" width="80" height="18" fontSize="9.0" blankWhenNull="true">
+                <expression><![CDATA[$F{marca}]]></expression>
+            </element>
+            <element kind="textField" uuid="b0000000-0000-0000-0000-000000000028"
+                     x="670" y="0" width="50" height="18" fontSize="9.0" hTextAlign="Right">
+                <expression><![CDATA[String.format("%.2f", $F{tasaIva})]]></expression>
+            </element>
+            <element kind="textField" uuid="b0000000-0000-0000-0000-000000000029"
+                     x="720" y="0" width="45" height="18" fontSize="9.0" hTextAlign="Center">
+                <expression><![CDATA[$F{ctrlstock} ? "Si" : "No"]]></expression>
+            </element>
+            <element kind="textField" uuid="b0000000-0000-0000-0000-00000000002a"
+                     x="765" y="0" width="37" height="18" fontSize="9.0" hTextAlign="Center">
+                <expression><![CDATA[$F{activo} ? "Si" : "No"]]></expression>
+            </element>
+        </band>
+    </detail>
+
+    <pageFooter height="20">
+        <element kind="line" uuid="b0000000-0000-0000-0000-000000000030"
+                 x="0" y="0" width="802" height="1"/>
+        <element kind="textField" uuid="b0000000-0000-0000-0000-000000000031"
+                 x="0" y="4" width="401" height="15" fontSize="8.0">
+            <expression><![CDATA["Generado: " + new java.util.Date()]]></expression>
+        </element>
+        <element kind="textField" uuid="b0000000-0000-0000-0000-000000000032"
+                 x="401" y="4" width="401" height="15" fontSize="8.0" hTextAlign="Right">
+            <expression><![CDATA["Pagina " + $V{PAGE_NUMBER}]]></expression>
+        </element>
+    </pageFooter>
+
+    <noData height="30">
+        <element kind="staticText" uuid="b0000000-0000-0000-0000-000000000040"
+                 x="0" y="10" width="802" height="20" italic="true" hTextAlign="Center">
+            <text><![CDATA[Sin productos para los filtros seleccionados.]]></text>
+        </element>
+    </noData>
+</jasperReport>
