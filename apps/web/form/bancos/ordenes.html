@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../../assets/favicon.png" type="image/png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/ordenes.css">
+    <title>Órdenes de Pago - Bancos</title>
+</head>
+<body>
+    <div class="contenedor">
+        <nav id="breadcrumb" class="breadcrumb"></nav>
+
+        <div class="table-card">
+            <div class="table-header">
+                <h3>Órdenes de Pago</h3>
+                <div class="table-header-actions">
+                    <select id="filtroEstado" class="form-select input-estilizado" style="min-width:150px;">
+                        <option value="">Todos los estados</option>
+                        <option value="BORRADOR">Borrador</option>
+                        <option value="APROBADA">Aprobada</option>
+                        <option value="PAGADA">Pagada</option>
+                        <option value="ANULADA">Anulada</option>
+                    </select>
+                    <input type="text" class="form-control input-estilizado" placeholder="Buscar por Nº, proveedor o concepto..." autocomplete="off" id="searchInput" style="min-width:280px;">
+                    <button type="button" class="btn-primary" id="btnNueva" style="white-space:nowrap;"><i class="fa-solid fa-plus"></i> Nueva Orden</button>
+                </div>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead><tr class="sm"><th>Nº</th><th>Fecha</th><th>Proveedor</th><th class="text-end">Neto</th><th>Estado</th><th style="text-align:center;">Acciones</th></tr></thead>
+                    <tbody id="tablaOrdenes"></tbody>
+                </table>
+            </div>
+            <div class="pagination pagination-productos">
+                <div class="pagination-total" id="pageinfo">Total registros 0</div>
+                <div class="pagination-buttons pagination-buttons-productos">
+                    <button type="button" id="opPrimero" class="pagination-nav"><i class="fa-solid fa-angles-left"></i></button>
+                    <button type="button" id="opAnterior" class="pagination-nav"><i class="fa-solid fa-angle-left"></i></button>
+                    <div id="opPages" class="pagination-pages"></div>
+                    <button type="button" id="opSiguiente" class="pagination-nav"><i class="fa-solid fa-angle-right"></i></button>
+                    <button type="button" id="opUltimo" class="pagination-nav"><i class="fa-solid fa-angles-right"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================== MODAL ORDEN ===================== -->
+        <div id="opModal" class="modal">
+            <div class="modal-content" style="max-width:920px;">
+                <div class="modal-header">
+                    <div class="modal-header-title"><h2 id="opTitle" class="tituloform">Nueva Orden de Pago</h2></div>
+                    <span id="opBadge" class="op-badge"></span>
+                    <button type="button" id="opClose" class="modal-close">×</button>
+                </div>
+                <div class="modal-body">
+                    <form id="opForm">
+                        <div class="row g-3 mb-2">
+                            <div class="col-5"><label for="opaprvid">Proveedor *</label><select id="opaprvid" class="form-select input-estilizado" data-required="true"><option value="">Seleccionar...</option></select></div>
+                            <div class="col-3"><label for="opafecha">Fecha *</label><input type="date" id="opafecha" class="form-control input-estilizado" data-required="true"></div>
+                            <div class="col-2"><label for="opamoneda">Moneda *</label><select id="opamoneda" class="form-select input-estilizado" data-required="true"><option value="">...</option></select></div>
+                            <div class="col-2"><label for="opatipcambio">T. cambio</label><input type="number" id="opatipcambio" class="form-control input-estilizado" step="0.000001" value="1"></div>
+                        </div>
+                        <div class="row g-3 mb-2"><div class="col-12"><label for="opaconcepto">Concepto *</label><input type="text" id="opaconcepto" class="form-control input-estilizado" maxlength="255" autocomplete="off" data-required="true"></div></div>
+                    </form>
+
+                    <!-- Imputaciones -->
+                    <div class="op-section">
+                        <div class="op-section-head"><span>Comprobantes imputados</span><button type="button" class="btn-mini" id="btnAddImput"><i class="fa-solid fa-plus"></i> Agregar</button></div>
+                        <table class="op-table"><thead><tr><th>Tipo</th><th>Comprobante</th><th>Emisión</th><th class="text-end">Total doc.</th><th class="text-end">Imputado</th><th></th></tr></thead><tbody id="tablaImput"></tbody></table>
+                    </div>
+
+                    <!-- Retenciones -->
+                    <div class="op-section">
+                        <div class="op-section-head"><span>Retenciones</span><button type="button" class="btn-mini" id="btnAddReten"><i class="fa-solid fa-plus"></i> Agregar</button></div>
+                        <table class="op-table"><thead><tr><th>Tipo</th><th>Concepto</th><th class="text-end">Base</th><th class="text-end">Tasa %</th><th class="text-end">Monto</th><th></th></tr></thead><tbody id="tablaReten"></tbody></table>
+                    </div>
+
+                    <!-- Totales -->
+                    <div class="op-totales">
+                        <div><small>Imputado</small><div id="tImput">0</div></div>
+                        <div><small>Retenido</small><div id="tReten">0</div></div>
+                        <div class="op-neto"><small>Neto a pagar</small><div id="tNeto">0</div></div>
+                    </div>
+
+                    <!-- Medios (solo APROBADA/PAGADA) -->
+                    <div class="op-section" id="seccionMedios" style="display:none;">
+                        <div class="op-section-head"><span>Medios de pago</span><button type="button" class="btn-mini" id="btnAddMedio"><i class="fa-solid fa-plus"></i> Agregar medio</button></div>
+                        <table class="op-table"><thead><tr><th>Forma</th><th>Instrumento</th><th class="text-end">Importe</th><th></th></tr></thead><tbody id="tablaMedios"></tbody></table>
+                        <div class="op-medios-resumen">Pagado: <b id="mPagado">0</b> / Neto: <b id="mNeto">0</b> <span id="mFalta"></span></div>
+                    </div>
+                </div>
+                <div class="modal-footer" id="opFooter">
+                    <button type="button" id="opCancel" class="btn btn-secondary">Cerrar</button>
+                    <button type="button" id="btnEliminar" class="btn btn-secondary" style="display:none;"><i class="fa-solid fa-trash"></i> Eliminar</button>
+                    <button type="button" id="btnAnular" class="btn btn-secondary" style="display:none;"><i class="fa-solid fa-ban"></i> Anular</button>
+                    <button type="button" id="btnGuardar" class="btn btn-primary" style="display:none;">Guardar borrador</button>
+                    <button type="button" id="btnAprobar" class="btn btn-primary" style="display:none;"><i class="fa-solid fa-check"></i> Aprobar</button>
+                    <button type="button" id="btnPagar" class="btn btn-primary" style="display:none;"><i class="fa-solid fa-money-bill-wave"></i> Registrar pago</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================== MODAL AGREGAR MEDIO ===================== -->
+        <div id="medioModal" class="modal">
+            <div class="modal-content" style="max-width:520px;">
+                <div class="modal-header"><div class="modal-header-title"><h2 class="tituloform">Agregar medio de pago</h2></div><button type="button" id="medioClose" class="modal-close">×</button></div>
+                <div class="modal-body">
+                    <form id="medioForm">
+                        <div class="row g-3 mb-2"><div class="col-12"><label for="opmforma">Forma *</label>
+                            <select id="opmforma" class="form-select input-estilizado">
+                                <option value="EFECTIVO">Efectivo</option>
+                                <option value="CHEQUE">Cheque propio</option>
+                                <option value="CHEQUE_TER">Cheque de tercero (endoso)</option>
+                                <option value="TRANSFER">Transferencia</option>
+                                <option value="COMPENSA">Compensación</option>
+                            </select></div></div>
+                        <div class="row g-3 mb-2" id="rowInstrumento" style="display:none;"><div class="col-12"><label id="lblInstrumento">Instrumento *</label>
+                            <select id="opmInstrumento" class="form-select input-estilizado"><option value="">Seleccionar...</option></select></div></div>
+                        <div class="row g-3 mb-2"><div class="col-6"><label for="opmimporte">Importe *</label><input type="text" id="opmimporte" class="form-control input-estilizado" data-importe value="0" autocomplete="off"></div>
+                            <div class="col-6"><label for="opmrefext">Referencia</label><input type="text" id="opmrefext" class="form-control input-estilizado" maxlength="50" autocomplete="off"></div></div>
+                    </form>
+                </div>
+                <div class="modal-footer"><button type="button" id="medioCancel" class="btn btn-secondary">Cancelar</button><button type="button" id="medioGuardar" class="btn btn-primary">Agregar</button></div>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="./ordenes.js"></script>
+</body>
+</html>

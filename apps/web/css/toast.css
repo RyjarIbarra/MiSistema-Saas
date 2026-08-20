@@ -4,10 +4,14 @@
     position: fixed;
     top: 20px;
     right: 20px;
-    z-index: 9999;
+    z-index: 100000;   /* por encima del topbar (999) y del profile-dropdown (9999) */
     display: flex;
     flex-direction: column;
     gap: 16px;
+    /* CLAVE: el contenedor debe capturar los clics. Sin esto (pointer-events:none),
+       el clic en la X atraviesa el toast y cae en el .user-profile del topbar,
+       abriendo el menu de usuario en vez de cerrar el toast. */
+    pointer-events: auto;
 }
 
 .toast-personalizado {

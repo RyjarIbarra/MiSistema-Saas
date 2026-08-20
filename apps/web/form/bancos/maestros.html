@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../../assets/favicon.png" type="image/png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <title>Datos Maestros - Bancos</title>
+</head>
+<body>
+    <div class="contenedor">
+        <nav id="breadcrumb" class="breadcrumb"></nav>
+        <div class="tim-card maestros-card">
+            <div class="config-header">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div class="tabs">
+                        <div class="tab active" data-tabnom="bancos"><p>Bancos</p></div>
+                        <div class="tab" data-tabnom="tipos"><p>Tipos de Movimiento</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-contents">
+                <!-- ===================== TAB BANCOS ===================== -->
+                <div id="tab-bancos" class="tab-content active">
+                    <div class="table-header">
+                        <h3>Bancos</h3>
+                        <div class="table-header-actions">
+                            <input type="text" class="form-control input-estilizado" placeholder="Buscar por código o nombre..." autocomplete="off" id="searchBanco">
+                            <button type="button" class="btn-primary" id="btnNuevoBanco"><i class="fa-solid fa-plus"></i> Nuevo Banco</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr class="sm">
+                                    <th>Código</th><th>Nombre</th><th>Tipo</th><th>Teléfono</th><th>Estado</th>
+                                    <th style="text-align: center;">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaBancos"></tbody>
+                        </table>
+                    </div>
+                    <div class="pagination pagination-productos">
+                        <div class="pagination-total" id="pageinfoBanco">Total registros 0</div>
+                        <div class="pagination-buttons pagination-buttons-productos">
+                            <button type="button" id="banPrimero" class="pagination-nav"><i class="fa-solid fa-angles-left"></i></button>
+                            <button type="button" id="banAnterior" class="pagination-nav"><i class="fa-solid fa-angle-left"></i></button>
+                            <div id="banPages" class="pagination-pages"></div>
+                            <button type="button" id="banSiguiente" class="pagination-nav"><i class="fa-solid fa-angle-right"></i></button>
+                            <button type="button" id="banUltimo" class="pagination-nav"><i class="fa-solid fa-angles-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===================== TAB TIPOS ===================== -->
+                <div id="tab-tipos" class="tab-content">
+                    <div class="table-header">
+                        <h3>Tipos de Movimiento</h3>
+                        <div class="table-header-actions">
+                            <input type="text" class="form-control input-estilizado" placeholder="Buscar por código o descripción..." autocomplete="off" id="searchTipo">
+                            <button type="button" class="btn-primary" id="btnNuevoTipo"><i class="fa-solid fa-plus"></i> Nuevo Tipo</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr class="sm">
+                                    <th>Código</th><th>Descripción</th><th>Signo</th><th>Orden</th><th>Estado</th>
+                                    <th style="text-align: center;">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaTipos"></tbody>
+                        </table>
+                    </div>
+                    <div class="pagination pagination-productos">
+                        <div class="pagination-total" id="pageinfoTipo">Total registros 0</div>
+                        <div class="pagination-buttons pagination-buttons-productos">
+                            <button type="button" id="tipPrimero" class="pagination-nav"><i class="fa-solid fa-angles-left"></i></button>
+                            <button type="button" id="tipAnterior" class="pagination-nav"><i class="fa-solid fa-angle-left"></i></button>
+                            <div id="tipPages" class="pagination-pages"></div>
+                            <button type="button" id="tipSiguiente" class="pagination-nav"><i class="fa-solid fa-angle-right"></i></button>
+                            <button type="button" id="tipUltimo" class="pagination-nav"><i class="fa-solid fa-angles-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================== MODAL BANCO ===================== -->
+        <div id="bancoModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-header-title"><h2 id="bancoModalTitle" class="tituloform">Nuevo Banco</h2></div>
+                    <button type="button" id="banClose" class="modal-close">×</button>
+                </div>
+                <div class="modal-body">
+                    <form id="bancoForm">
+                        <div class="row g-3 mb-2">
+                            <div class="col-4"><label for="bancodigo">Código *</label><input type="text" id="bancodigo" class="form-control input-estilizado" placeholder="CONT" maxlength="10" autocomplete="off" data-required="true"></div>
+                            <div class="col-8"><label for="bannombre">Nombre *</label><input type="text" id="bannombre" class="form-control input-estilizado" placeholder="Banco Continental" maxlength="100" autocomplete="off" data-required="true"></div>
+                        </div>
+                        <div class="row g-3 mb-2">
+                            <div class="col-4"><label for="bantipo">Tipo *</label><select id="bantipo" class="form-select input-estilizado" data-required="true"><option value="B">Banco</option><option value="F">Financiera</option><option value="C">Cooperativa</option></select></div>
+                            <div class="col-4"><label for="banruc">RUC</label><input type="text" id="banruc" class="form-control input-estilizado" placeholder="80012345" maxlength="11" autocomplete="off"></div>
+                            <div class="col-4"><label for="bandv">DV</label><input type="number" id="bandv" class="form-control input-estilizado" placeholder="7" min="0" max="9" autocomplete="off"></div>
+                        </div>
+                        <div class="row g-3 mb-2">
+                            <div class="col-6"><label for="banswift">SWIFT / BIC</label><input type="text" id="banswift" class="form-control input-estilizado" placeholder="BCONPYPX" maxlength="11" autocomplete="off"></div>
+                            <div class="col-6"><label for="banbcp">Código BCP</label><input type="text" id="banbcp" class="form-control input-estilizado" maxlength="5" autocomplete="off"></div>
+                        </div>
+                        <div class="row g-3 mb-2">
+                            <div class="col-6"><label for="bantelefono">Teléfono</label><input type="text" id="bantelefono" class="form-control input-estilizado" placeholder="+595 21 123456" maxlength="30" autocomplete="off"></div>
+                            <div class="col-6"><label for="banejecutivo">Ejecutivo de cuenta</label><input type="text" id="banejecutivo" class="form-control input-estilizado" maxlength="100" autocomplete="off"></div>
+                        </div>
+                        <div class="row g-3 mb-2"><div class="col-12"><label for="banobserva">Observaciones</label><input type="text" id="banobserva" class="form-control input-estilizado" placeholder="Notas adicionales..." autocomplete="off"></div></div>
+                        <div class="row g-3 mb-2"><div class="col-12"><label><input type="checkbox" id="banactivo" checked> Activo</label></div></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="banCancel" class="btn btn-secondary">Cancelar</button>
+                    <button type="button" id="banGuardar" class="btn btn-primary">Guardar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================== MODAL TIPO ===================== -->
+        <div id="tipoModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-header-title"><h2 id="tipoModalTitle" class="tituloform">Nuevo Tipo de Movimiento</h2></div>
+                    <button type="button" id="tipClose" class="modal-close">×</button>
+                </div>
+                <div class="modal-body">
+                    <form id="tipoForm">
+                        <div class="row g-3 mb-2">
+                            <div class="col-4"><label for="tmocodigo">Código *</label><input type="text" id="tmocodigo" class="form-control input-estilizado" placeholder="DEP" maxlength="3" autocomplete="off" data-required="true" style="text-transform: uppercase;"></div>
+                            <div class="col-8"><label for="tmodescri">Descripción *</label><input type="text" id="tmodescri" class="form-control input-estilizado" placeholder="Depósito" maxlength="60" autocomplete="off" data-required="true"></div>
+                        </div>
+                        <div class="row g-3 mb-2">
+                            <div class="col-6"><label for="tmosigno">Signo *</label><select id="tmosigno" class="form-select input-estilizado" data-required="true"><option value="1">Acredita (+1)</option><option value="-1">Debita (-1)</option></select></div>
+                            <div class="col-6"><label for="tmoorden">Orden</label><input type="number" id="tmoorden" class="form-control input-estilizado" value="0" autocomplete="off"></div>
+                        </div>
+                        <div class="row g-3 mb-2">
+                            <div class="col-6"><label><input type="checkbox" id="tmotransfer"> Traspaso entre cuentas propias</label></div>
+                            <div class="col-6"><label><input type="checkbox" id="tmorefext"> Exige referencia externa</label></div>
+                        </div>
+                        <div class="row g-3 mb-2">
+                            <div class="col-6"><label><input type="checkbox" id="tmobenefic"> Exige contraparte</label></div>
+                            <div class="col-6"><label><input type="checkbox" id="tmomanual" checked> Admite carga manual</label></div>
+                        </div>
+                        <div class="row g-3 mb-2"><div class="col-12"><label><input type="checkbox" id="tmoactivo" checked> Activo</label></div></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="tipCancel" class="btn btn-secondary">Cancelar</button>
+                    <button type="button" id="tipGuardar" class="btn btn-primary">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="./maestros.js"></script>
+</body>
+</html>

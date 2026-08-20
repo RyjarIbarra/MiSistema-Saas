@@ -453,8 +453,12 @@ async function loadView(route) {
         skeleton.classList.add('show');
         
         // Limpiar loader anterior
-        cleanupLoader();    
-        
+        cleanupLoader();
+
+        // Limpiar toasts remanentes del formulario anterior: viven en este documento (el top) y,
+        // si el iframe que los creó navega, su timer de auto-cierre muere y quedarían congelados.
+        document.querySelectorAll('.toast-container').forEach((c) => c.remove());
+
         // Cambiar src
         iframeLayout.src = 'form' + route.path;
         

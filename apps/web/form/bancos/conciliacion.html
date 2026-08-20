@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../../assets/favicon.png" type="image/png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/conciliacion.css">
+    <title>Conciliación Bancaria - Bancos</title>
+</head>
+<body>
+    <div class="contenedor">
+        <nav id="breadcrumb" class="breadcrumb"></nav>
+
+        <div class="table-card conc-card">
+            <div class="table-header">
+                <div class="d-flex align-items-center gap-2">
+                    <h3>Conciliación Bancaria</h3>
+                    <div class="info-note">
+                        <button type="button" class="info-note-button" aria-label="Cómo leer el informe de conciliación"><i class="fa-solid fa-circle-info"></i></button>
+                        <div class="info-note-tooltip" style="width: 480px;">
+                            <span class="info-note-bullet">*</span>
+                            Error de carga ≠ 0: el extracto está mal cargado (falta o sobra una línea). Corregir antes de seguir.
+                            <br><br>
+                            <span class="info-note-bullet">*</span>
+                            Partidas abiertas: líneas del banco sin vincular a un movimiento del libro. Registrarlas y vincularlas.
+                            <br><br>
+                            <span class="info-note-bullet">*</span>
+                            Movimientos abiertos: normal. Son cheques emitidos que el banco todavía no debitó; reaparecen en el extracto siguiente. No impiden cerrar.
+                            <br><br>
+                            <span class="info-note-bullet">*</span>
+                            La conciliación está completa cuando el error de carga es cero y no quedan partidas abiertas.
+                        </div>
+                    </div>
+                </div>
+                <div class="table-header-actions">
+                    <select id="cuentaSel" class="form-select input-estilizado" style="min-width:240px;"><option value="">Seleccionar cuenta...</option></select>
+                    <select id="extractoSel" class="form-select input-estilizado" style="min-width:240px;"><option value="">— Extractos —</option></select>
+                    <button type="button" class="btn-primary" id="btnNuevoExt" style="white-space:nowrap;"><i class="fa-solid fa-plus"></i> Nuevo Extracto</button>
+                </div>
+            </div>
+
+            <!-- Resumen del informe -->
+            <div id="resumen" class="conc-resumen" style="display:none;">
+                <div class="conc-chip"><small>Saldo banco</small><div id="rSaldo">—</div></div>
+                <div class="conc-chip"><small>Error de carga</small><div id="rError">—</div></div>
+                <div class="conc-chip"><small>Partidas</small><div id="rPartidas">—</div></div>
+                <div class="conc-chip"><small>Partidas abiertas</small><div id="rAbiertas">—</div></div>
+                <div class="conc-chip"><small>Movim. abiertos</small><div id="rMovAb">—</div></div>
+                <div class="conc-chip"><small>Estado</small><div id="rEstado">—</div></div>
+            </div>
+
+            <!-- Workspace dos paneles -->
+            <div id="workspace" class="conc-workspace" style="display:none;">
+                <div class="conc-panel">
+                    <div class="conc-panel-head">
+                        <span>Partidas del banco</span>
+                        <div>
+                            <button type="button" class="btn-mini" id="btnAddPartida"><i class="fa-solid fa-plus"></i> Partida</button>
+                            <button type="button" class="btn-mini" id="btnBulk"><i class="fa-solid fa-file-excel"></i> Importar Excel</button>
+                        </div>
+                    </div>
+                    <div class="conc-scroll">
+                        <table class="conc-table">
+                            <thead><tr class="sm"><th>Fecha</th><th>Descripción</th><th class="text-end">Débito</th><th class="text-end">Crédito</th><th>Estado</th><th></th></tr></thead>
+                            <tbody id="tablaPartidas"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="conc-panel">
+                    <div class="conc-panel-head">
+                        <span>Movimientos del libro</span>
+                        <small class="text-muted" style="font-weight:400;">hasta fin del período</small>
+                    </div>
+                    <div class="conc-scroll">
+                        <table class="conc-table">
+                            <thead><tr class="sm"><th>Fecha</th><th>Tipo</th><th>Concepto</th><th class="text-end">Importe</th><th class="text-end">Pend.</th></tr></thead>
+                            <tbody id="tablaMovs"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Barra de acciones -->
+            <div id="accionbar" class="conc-actionbar" style="display:none;">
+                <button type="button" class="btn btn-secondary" id="btnAuto"><i class="fa-solid fa-wand-magic-sparkles"></i> Auto-emparejar</button>
+                <button type="button" class="btn btn-primary" id="btnVincular" disabled><i class="fa-solid fa-link"></i> Vincular seleccionados</button>
+                <div style="flex:1;"></div>
+                <button type="button" class="btn btn-secondary" id="btnEliminarExt"><i class="fa-solid fa-trash"></i> Eliminar extracto</button>
+                <button type="button" class="btn btn-primary" id="btnCerrar"><i class="fa-solid fa-lock"></i> Cerrar conciliación</button>
+            </div>
+        </div>
+
+        <!-- ===================== MODAL NUEVO EXTRACTO ===================== -->
+        <div id="extModal" class="modal">
+            <div class="modal-content" style="max-width:560px;">
+                <div class="modal-header"><div class="modal-header-title"><h2 class="tituloform">Nuevo Extracto</h2></div><button type="button" id="extClose" class="modal-close">×</button></div>
+                <div class="modal-body">
+                    <form id="extForm">
+                        <div class="row g-3 mb-2">
+                            <div class="col-12"><label for="extCuenta">Cuenta *</label><select id="extCuenta" class="form-select input-estilizado" data-required="true"><option value="">Seleccionar...</option></select></div>
+                        </div>
+                        <div class="row g-3 mb-2">
+                            <div class="col-6"><label for="extfecini">Desde *</label><input type="date" id="extfecini" class="form-control input-estilizado" data-required="true"></div>
+                            <div class="col-6"><label for="extfecfin">Hasta *</label><input type="date" id="extfecfin" class="form-control input-estilizado" data-required="true"></div>
+                        </div>
+                        <div class="row g-3 mb-2">
+                            <div class="col-6"><label for="extsaldoini">Saldo inicial (banco) *</label><input type="text" id="extsaldoini" class="form-control input-estilizado" data-importe value="0" autocomplete="off"></div>
+                            <div class="col-6"><label for="extsaldofin">Saldo final (banco) *</label><input type="text" id="extsaldofin" class="form-control input-estilizado" data-importe value="0" autocomplete="off"></div>
+                        </div>
+                        <div class="row g-3 mb-2"><div class="col-12"><label for="extobserva">Observaciones</label><input type="text" id="extobserva" class="form-control input-estilizado" autocomplete="off"></div></div>
+                    </form>
+                </div>
+                <div class="modal-footer"><button type="button" id="extCancel" class="btn btn-secondary">Cancelar</button><button type="button" id="extGuardar" class="btn btn-primary">Crear</button></div>
+            </div>
+        </div>
+
+        <!-- ===================== MODAL AGREGAR PARTIDA ===================== -->
+        <div id="parModal" class="modal">
+            <div class="modal-content" style="max-width:560px;">
+                <div class="modal-header"><div class="modal-header-title"><h2 class="tituloform">Agregar Partida</h2></div><button type="button" id="parClose" class="modal-close">×</button></div>
+                <div class="modal-body">
+                    <form id="parForm">
+                        <div class="row g-3 mb-2">
+                            <div class="col-6"><label for="pfecha">Fecha *</label><input type="date" id="pfecha" class="form-control input-estilizado" data-required="true"></div>
+                            <div class="col-6"><label for="pchecknro">Nº cheque (si aplica)</label><input type="number" id="pchecknro" class="form-control input-estilizado" min="1" autocomplete="off"></div>
+                        </div>
+                        <div class="row g-3 mb-2"><div class="col-12"><label for="pdescri">Descripción *</label><input type="text" id="pdescri" class="form-control input-estilizado" maxlength="255" autocomplete="off" data-required="true"></div></div>
+                        <div class="row g-3 mb-2">
+                            <div class="col-6"><label for="pdebito">Débito</label><input type="text" id="pdebito" class="form-control input-estilizado" data-importe value="0" autocomplete="off"></div>
+                            <div class="col-6"><label for="pcredito">Crédito</label><input type="text" id="pcredito" class="form-control input-estilizado" data-importe value="0" autocomplete="off"></div>
+                        </div>
+                        <div class="row g-3 mb-2"><div class="col-12"><label for="preferen">Referencia del banco</label><input type="text" id="preferen" class="form-control input-estilizado" maxlength="50" autocomplete="off"></div></div>
+                    </form>
+                </div>
+                <div class="modal-footer"><button type="button" id="parCancel" class="btn btn-secondary">Cancelar</button><button type="button" id="parGuardar" class="btn btn-primary">Agregar</button></div>
+            </div>
+        </div>
+
+        <!-- ===================== MODAL IMPORTAR EXCEL ===================== -->
+        <div id="bulkModal" class="modal">
+            <div class="modal-content" style="max-width:600px;">
+                <div class="modal-header"><div class="modal-header-title"><h2 class="tituloform">Importar partidas desde Excel</h2></div><button type="button" id="bulkClose" class="modal-close">×</button></div>
+                <div class="modal-body">
+                    <ol style="color:#555; padding-left:18px; margin-bottom:14px;">
+                        <li>Descargá la plantilla y pasásela al cliente (o completala vos).</li>
+                        <li>Cargá una fila por cada línea del extracto del banco.</li>
+                        <li>Subí el archivo completado.</li>
+                    </ol>
+                    <button type="button" class="btn btn-secondary" id="btnPlantilla" style="margin-bottom:14px;"><i class="fa-solid fa-file-arrow-down"></i> Descargar plantilla</button>
+
+                    <div id="dropzone" class="conc-dropzone">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <p id="dropText">Arrastrá el archivo .xlsx aquí o hacé clic para elegirlo</p>
+                        <input type="file" id="partidaFile" accept=".xlsx,.xls" style="display:none;">
+                    </div>
+
+                    <div id="importResult" style="margin-top:14px;"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="bulkCancel" class="btn btn-secondary">Cerrar</button>
+                    <button type="button" id="bulkGuardar" class="btn btn-primary" disabled><i class="fa-solid fa-upload"></i> Importar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="./conciliacion.js"></script>
+</body>
+</html>

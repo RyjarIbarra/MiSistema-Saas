@@ -2451,6 +2451,37 @@ td:before {
     overflow-y: auto;
 }
 
+/* Cards con pestañas de alto fijo según el viewport (Datos Maestros, Cheques):
+   independiente de la cantidad de registros (la tabla scrollea, la paginación queda anclada abajo). */
+.maestros-card,
+.cheques-card {
+    height: calc(100vh - 70px - 40px);
+}
+
+.maestros-card .tab-contents,
+.cheques-card .tab-contents {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.maestros-card .tab-content.active,
+.cheques-card .tab-content.active {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+}
+
+.maestros-card .table-container,
+.cheques-card .table-container {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
 
 
 /* Utilizado en el tab de configuracion de producto - Inicio */
@@ -3072,7 +3103,7 @@ td:before {
 }
 
 .factura-table-container thead {
-    padding-right: 8px;
+    padding-right: 0;
 }
 
 .factura-table-container tbody {
@@ -3108,7 +3139,7 @@ td:before {
 
 .factura-table-container thead th:nth-child(2),
 .factura-table-container tbody td:nth-child(2) {
-    width: 16%;
+    width: 13%;
 }
 
 .factura-table-container thead th:nth-child(3),
@@ -3123,12 +3154,12 @@ td:before {
 
 .factura-table-container thead th:nth-child(5),
 .factura-table-container tbody td:nth-child(5) {
-    width: 18%;
+    width: 15%;
 }
 
 .factura-table-container thead th:nth-child(6),
 .factura-table-container tbody td:nth-child(6) {
-    width: 10%;
+    width: 9%;
 }
 
 .factura-table-container thead th:nth-child(7),
@@ -3144,6 +3175,12 @@ td:before {
 .factura-table-container thead th:nth-child(9),
 .factura-table-container tbody td:nth-child(9) {
     width: 7%;
+}
+
+.factura-table-container thead th:nth-child(10),
+.factura-table-container tbody td:nth-child(10) {
+    width: 7%;
+    text-align: center;
 }
 
 .totales-list {
@@ -3263,4 +3300,31 @@ td:before {
     .venta-product-row {
         grid-template-columns: 1fr;
     }
+}
+
+/* --- Toast: fix de la X que no cerraba --------------------------------------
+   CAUSA: el .toast-container tenia pointer-events:none, asi el clic en la X
+   atravesaba el toast y caia en el .user-profile del topbar (se abria el menu
+   de usuario en vez de cerrar el toast). Ni z-index ni posicion lo resolvian.
+   Se define aca ademas de en toast.css para que cargue de forma confiable con
+   style.css (el @import de toast.css puede quedar cacheado). */
+.toast-container {
+    pointer-events: auto;
+    top: 20px;
+    bottom: auto;
+    right: 20px;
+    z-index: 100000;
+}
+
+/* Animaciones del toast (estaban referenciadas en toast.css pero nunca definidas,
+   por eso al cerrar quedaba 300ms quieto antes de desaparecer). Deslizan desde/hacia
+   la derecha con un fundido. */
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(120%); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideOut {
+    from { opacity: 1; transform: translateX(0); }
+    to   { opacity: 0; transform: translateX(120%); }
 }

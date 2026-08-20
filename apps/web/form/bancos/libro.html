@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../../assets/favicon.png" type="image/png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <title>Libro de Movimientos - Bancos</title>
+</head>
+<body>
+    <div class="contenedor">
+        <nav id="breadcrumb" class="breadcrumb"></nav>
+
+        <div class="table-card">
+            <div class="table-header">
+                <h3>Libro de Movimientos</h3>
+                <div class="table-header-actions">
+                    <select id="cuentaSel" class="form-select input-estilizado" style="min-width:280px;">
+                        <option value="">Seleccionar cuenta...</option>
+                    </select>
+                    <input type="text" class="form-control input-estilizado" placeholder="Buscar por concepto, referencia..." autocomplete="off" id="searchInput" style="min-width:325px;">
+                    <button type="button" class="btn-primary" id="btnNuevo" style="white-space: nowrap;"><i class="fa-solid fa-plus"></i> Nuevo Movimiento</button>
+                </div>
+            </div>
+
+            <!-- Tarjeta de saldo -->
+            <div id="saldoCard" class="row mb-2" style="display:none; gap:0; padding:8px 20px;">
+                <div class="col"><small class="text-muted">Saldo inicial</small><div id="saldoIni" style="font-weight:600;">—</div></div>
+                <div class="col"><small class="text-muted">Movimientos</small><div id="saldoMov" style="font-weight:600;">—</div></div>
+                <div class="col"><small class="text-muted">Saldo actual</small><div id="saldoAct" style="font-weight:700;font-size:1.1rem;">—</div></div>
+                <div class="col"><small class="text-muted">Último movimiento</small><div id="saldoUlt" style="font-weight:600;">—</div></div>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr class="sm">
+                            <th>Fecha</th><th>Nº</th><th>Tipo</th><th>Concepto</th>
+                            <th class="text-end">Importe</th><th>Estado</th>
+                            <th style="text-align: center;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaMov"></tbody>
+                </table>
+            </div>
+
+            <div class="pagination pagination-productos">
+                <div class="pagination-total" id="pageinfo">Total registros 0</div>
+                <div class="pagination-buttons pagination-buttons-productos">
+                    <button type="button" id="movPrimero" class="pagination-nav"><i class="fa-solid fa-angles-left"></i></button>
+                    <button type="button" id="movAnterior" class="pagination-nav"><i class="fa-solid fa-angle-left"></i></button>
+                    <div id="movPages" class="pagination-pages"></div>
+                    <button type="button" id="movSiguiente" class="pagination-nav"><i class="fa-solid fa-angle-right"></i></button>
+                    <button type="button" id="movUltimo" class="pagination-nav"><i class="fa-solid fa-angles-right"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ MODAL NUEVO MOVIMIENTO ============ -->
+        <div id="movModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-header-title"><h2 class="tituloform">Nuevo Movimiento</h2></div>
+                    <button type="button" id="movClose" class="modal-close">×</button>
+                </div>
+                <div class="modal-body">
+                    <form id="movForm">
+                        <div class="row g-3 mb-2">
+                            <div class="col-6"><label for="mbatipo">Tipo *</label>
+                                <select id="mbatipo" class="form-select input-estilizado" data-required="true"><option value="">Seleccionar...</option></select>
+                            </div>
+                            <div class="col-3"><label for="mbafecha">Fecha *</label><input type="date" id="mbafecha" class="form-control input-estilizado" data-required="true"></div>
+                            <div class="col-3"><label for="mbaimporte">Importe *</label><input type="text" id="mbaimporte" class="form-control input-estilizado" data-importe placeholder="0" autocomplete="off" data-required="true"></div>
+                        </div>
+                        <div class="row g-3 mb-2">
+                            <div class="col-12"><label for="mbaconcepto">Concepto *</label><input type="text" id="mbaconcepto" class="form-control input-estilizado" maxlength="255" placeholder="Descripción del movimiento" autocomplete="off" data-required="true"></div>
+                        </div>
+                        <div class="row g-3 mb-2">
+                            <div class="col-6"><label for="mbarefext">Referencia externa <span id="refextReq" style="display:none;color:#c00;">*</span></label><input type="text" id="mbarefext" class="form-control input-estilizado" maxlength="50" placeholder="Nº transferencia, boleta..." autocomplete="off"></div>
+                            <div class="col-6"><label for="mbacontrapar">Contraparte <span id="contraReq" style="display:none;color:#c00;">*</span></label><input type="text" id="mbacontrapar" class="form-control input-estilizado" maxlength="255" placeholder="Beneficiario u ordenante" autocomplete="off"></div>
+                        </div>
+                        <div class="row g-3 mb-2">
+                            <div class="col-6"><label for="mbacontraruc">RUC contraparte</label><input type="text" id="mbacontraruc" class="form-control input-estilizado" maxlength="11" autocomplete="off"></div>
+                            <div class="col-6"><label for="mbaobserva">Observaciones</label><input type="text" id="mbaobserva" class="form-control input-estilizado" autocomplete="off"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="movCancel" class="btn btn-secondary">Cancelar</button>
+                    <button type="button" id="movGuardar" class="btn btn-primary">Registrar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ MODAL ANULAR ============ -->
+        <div id="anularModal" class="modal">
+            <div class="modal-content" style="max-width:460px;">
+                <div class="modal-header">
+                    <div class="modal-header-title"><h2 class="tituloform">Anular Movimiento</h2></div>
+                    <button type="button" id="anuClose" class="modal-close">×</button>
+                </div>
+                <div class="modal-body">
+                    <p>El movimiento no se elimina: queda anulado y excluido del saldo. Indicá el motivo.</p>
+                    <form id="anularForm">
+                        <div class="row g-3 mb-2"><div class="col-12"><label for="anuMotivo">Motivo *</label>
+                            <input type="text" id="anuMotivo" class="form-control input-estilizado" maxlength="255" autocomplete="off" data-required="true"></div></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="anuCancel" class="btn btn-secondary">Cancelar</button>
+                    <button type="button" id="anuConfirmar" class="btn btn-primary">Anular</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="./libro.js"></script>
+</body>
+</html>

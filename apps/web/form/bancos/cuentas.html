@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../../assets/favicon.png" type="image/png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <title>Cuentas Bancarias - Mi Sistema</title>
+</head>
+<body>
+    <div class="contenedor">
+        <nav id="breadcrumb" class="breadcrumb"></nav>
+
+        <div class="table-card">
+            <div class="table-header">
+                <h3>Cuentas Bancarias</h3>
+                <div class="table-header-actions">
+                    <input type="text" class="form-control input-estilizado" placeholder="Buscar por alias, número o banco..." autocomplete="off" id="searchInput">
+                    <button type="button" class="btn-primary" id="btnNuevo">
+                        <i class="fa-solid fa-plus"></i> Nueva Cuenta
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr class="sm">
+                            <th>Alias</th>
+                            <th>Banco</th>
+                            <th>Nº Cuenta</th>
+                            <th>Moneda</th>
+                            <th>Tipo</th>
+                            <th>Estado</th>
+                            <th style="text-align: center;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaCuentas"></tbody>
+                </table>
+            </div>
+
+            <div class="pagination pagination-productos">
+                <div class="pagination-total" id="pageinfo">Total registros 0</div>
+                <div class="pagination-buttons pagination-buttons-productos" id="cuentaPagination">
+                    <button type="button" id="btnpagPrimero" class="pagination-nav" aria-label="Primera página"><i class="fa-solid fa-angles-left"></i></button>
+                    <button type="button" id="btnpagAnterior" class="pagination-nav" aria-label="Página anterior"><i class="fa-solid fa-angle-left"></i></button>
+                    <div id="cuentaPaginationPages" class="pagination-pages"></div>
+                    <button type="button" id="btnpagSiguiente" class="pagination-nav" aria-label="Página siguiente"><i class="fa-solid fa-angle-right"></i></button>
+                    <button type="button" id="btnpagUltimo" class="pagination-nav" aria-label="Última página"><i class="fa-solid fa-angles-right"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <div id="cuentaModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-header-title">
+                        <h2 id="modalTitle" class="tituloform">Nueva Cuenta Bancaria</h2>
+                    </div>
+                    <button type="button" id="btnCloseModal" class="modal-close">×</button>
+                </div>
+                <div class="modal-body">
+                    <form id="cuentaForm">
+                        <div class="row g-3 mb-2">
+                            <div class="col-6">
+                                <label for="cbabanid">Banco *</label>
+                                <select id="cbabanid" class="form-select input-estilizado" data-required="true">
+                                    <option value="">Seleccionar...</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label for="cbaalias">Alias *</label>
+                                <input type="text" id="cbaalias" class="form-control input-estilizado" placeholder="Continental Gs. Operativa" maxlength="60" autocomplete="off" data-required="true">
+                            </div>
+                        </div>
+                        <div class="row g-3 mb-2">
+                            <div class="col-6">
+                                <label for="cbanumero">Nº de cuenta *</label>
+                                <input type="text" id="cbanumero" class="form-control input-estilizado" placeholder="00-123456-7" maxlength="30" autocomplete="off" data-required="true">
+                            </div>
+                            <div class="col-3">
+                                <label for="cbatipo">Tipo *</label>
+                                <select id="cbatipo" class="form-select input-estilizado" data-required="true">
+                                    <option value="C">Corriente</option>
+                                    <option value="A">Ahorro</option>
+                                </select>
+                            </div>
+                            <div class="col-3">
+                                <label for="cbamoneda">Moneda *</label>
+                                <select id="cbamoneda" class="form-select input-estilizado" data-required="true">
+                                    <option value="">...</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row g-3 mb-2">
+                            <div class="col-8">
+                                <label for="cbatitular">Titular *</label>
+                                <input type="text" id="cbatitular" class="form-control input-estilizado" placeholder="Razón social del titular" maxlength="255" autocomplete="off" data-required="true">
+                            </div>
+                            <div class="col-4">
+                                <label for="cbasucursal">Sucursal</label>
+                                <select id="cbasucursal" class="form-select input-estilizado">
+                                    <option value="">(ninguna)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row g-3 mb-2">
+                            <div class="col-4">
+                                <label for="cbasaldoini">Saldo inicial</label>
+                                <input type="text" id="cbasaldoini" class="form-control input-estilizado" data-importe value="0" autocomplete="off">
+                            </div>
+                            <div class="col-4">
+                                <label for="cbafecini">Fecha saldo inicial *</label>
+                                <input type="date" id="cbafecini" class="form-control input-estilizado" data-required="true">
+                            </div>
+                            <div class="col-4">
+                                <label for="cbasobregiro">Sobregiro</label>
+                                <input type="text" id="cbasobregiro" class="form-control input-estilizado" data-importe value="0" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="row g-3 mb-2">
+                            <div class="col-12">
+                                <label for="cbaobserva">Observaciones</label>
+                                <input type="text" id="cbaobserva" class="form-control input-estilizado" placeholder="Notas adicionales..." autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="row g-3 mb-2">
+                            <div class="col-12">
+                                <label><input type="checkbox" id="cbaactivo" checked> Activa</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="btnCancel" class="btn btn-secondary">Cancelar</button>
+                    <button type="button" id="btnGuardar" class="btn btn-primary">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="./cuentas.js"></script>
+</body>
+</html>

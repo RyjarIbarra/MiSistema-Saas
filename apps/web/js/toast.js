@@ -7,13 +7,31 @@
  * @param {string} type - Tipo de toast: 'info', 'success', 'warning', 'error'
  * @param {number} duration - Duración en milisegundos (por defecto 5000)
  */
+/**
+ * Documento de nivel superior accesible. Los formularios se cargan dentro de un iframe
+ * (menu.html); si el toast se crea en el iframe, el topbar del documento padre lo tapa y
+ * su X no recibe el clic. Renderizándolo en el documento raíz queda por encima de todo.
+ */
+function topDocument() {
+    try {
+        if (window.top && window.top.document && window.top.document.body) {
+            return window.top.document;
+        }
+    } catch (e) {
+        // window.top de otro origen: usamos el documento local
+    }
+    return document;
+}
+
 function showToast(title, message, type = 'info', duration = 5000) {
+    const doc = topDocument();
+
     // Crear contenedor si no existe
-    let container = document.querySelector('.toast-container');
+    let container = doc.querySelector('.toast-container');
     if (!container) {
-        container = document.createElement('div');
+        container = doc.createElement('div');
         container.className = 'toast-container';
-        document.body.appendChild(container);
+        doc.body.appendChild(container);
     }
 
     // Iconos según el tipo
@@ -40,7 +58,7 @@ function showToast(title, message, type = 'info', duration = 5000) {
     };
 
     // Crear el toast
-    const toast = document.createElement('div');
+    const toast = doc.createElement('div');
     toast.className = `toast-personalizado ${type}`;
     toast.innerHTML = `
         <div class="toast-icon">
@@ -57,13 +75,16 @@ function showToast(title, message, type = 'info', duration = 5000) {
     const closeBtn = toast.querySelector('.toast-close');
     closeBtn.addEventListener('click', () => removeToast(toast));
 
-    // Auto-cerrar después de la duración especificada
-    if (duration > 0) {
-        setTimeout(() => removeToast(toast), duration);
-    }
-
     // Agregar al contenedor
     container.appendChild(toast);
+
+    // Auto-cerrar después de la duración especificada.
+    // El timer se agenda en la ventana del documento DUEÑO del toast (el top), no en la del
+    // iframe del formulario: así se dispara aunque el iframe cambie de página o esté throttleado.
+    if (duration > 0) {
+        const win = doc.defaultView || window;
+        win.setTimeout(() => removeToast(toast), duration);
+    }
 }
 
 /**
@@ -71,13 +92,19 @@ function showToast(title, message, type = 'info', duration = 5000) {
  * @param {HTMLElement} toast - Elemento toast a eliminar
  */
 function removeToast(toast) {
+    if (toast.dataset.removing) return;   // idempotente: evita dobles llamadas (X + auto-cierre)
+    toast.dataset.removing = '1';
     toast.classList.add('removing');
-    
-    setTimeout(() => {
+
+    // El toast vive en el documento raíz (fuera del iframe); agendamos en la ventana de ESE
+    // documento para que el timer no dependa del iframe del formulario.
+    const doc = toast.ownerDocument || document;
+    const win = doc.defaultView || window;
+    win.setTimeout(() => {
         toast.remove();
-        
+
         // Eliminar contenedor si está vacío
-        const container = document.querySelector('.toast-container');
+        const container = doc.querySelector('.toast-container');
         if (container && container.children.length === 0) {
             container.remove();
         }

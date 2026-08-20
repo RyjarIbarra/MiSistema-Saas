@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../../assets/favicon.png" type="image/png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <title>Cheques - Bancos</title>
+</head>
+<body>
+    <div class="contenedor">
+        <nav id="breadcrumb" class="breadcrumb"></nav>
+        <div class="tim-card cheques-card">
+            <div class="config-header">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div class="tabs">
+                        <div class="tab active" data-tabnom="propios"><p>Cheques Propios</p></div>
+                        <div class="tab" data-tabnom="terceros"><p>Cheques de Terceros</p></div>
+                        <div class="tab" data-tabnom="talonarios"><p>Talonarios</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-contents">
+                <!-- ===================== CHEQUES PROPIOS ===================== -->
+                <div id="tab-propios" class="tab-content active">
+                    <div class="table-header">
+                        <div class="d-flex align-items-center gap-2">
+                            <h3>Cheques Propios</h3>
+                            <div class="info-note">
+                                <button type="button" class="info-note-button" aria-label="Cómo impactan los cheques propios en el libro de movimientos">
+                                    <i class="fa-solid fa-circle-info"></i>
+                                </button>
+                                <div class="info-note-tooltip" style="width: 460px;">
+                                    <span class="info-note-bullet">*</span>
+                                    Al emitir un cheque se registra de inmediato el movimiento en el Libro de Movimientos. El dinero ya está comprometido: tu saldo de libro baja aunque el banco todavía no lo sepa.
+                                    <br><br>
+                                    <span class="info-note-bullet">*</span>
+                                    El saldo de libro (tu realidad contable) no es el saldo bancario (el extracto): el banco recién debita cuando el cheque se presenta y se cobra.
+                                    <br><br>
+                                    <span class="info-note-bullet">*</span>
+                                    Marcar "Cobrado" no agrega otro movimiento: solo confirma que el banco debitó el cheque. Los cheques emitidos y aún no cobrados son la principal partida de la conciliación bancaria.
+                                    <br><br>
+                                    <span class="info-note-bullet">*</span>
+                                    En cheques diferidos, el movimiento se registra a la fecha de pago (no a la de emisión): afecta el saldo proyectado a esa fecha, sin deprimir el saldo de hoy.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-header-actions">
+                            <select id="filtroEstadoPro" class="form-select input-estilizado" style="min-width:150px;">
+                                <option value="">Todos los estados</option>
+                                <option value="EMITIDO">Emitido</option>
+                                <option value="ENTREGADO">Entregado</option>
+                                <option value="COBRADO">Cobrado</option>
+                                <option value="RECHAZADO">Rechazado</option>
+                                <option value="ANULADO">Anulado</option>
+                            </select>
+                            <input type="text" class="form-control input-estilizado" placeholder="Buscar por Nº, beneficiario o concepto..." autocomplete="off" id="searchPro" style="min-width:280px;">
+                            <button type="button" class="btn-primary" id="btnEmitir" style="white-space:nowrap;"><i class="fa-solid fa-plus"></i> Emitir Cheque</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr class="sm">
+                                    <th>Nº</th><th>Emisión</th><th>Pago</th><th>Beneficiario</th>
+                                    <th class="text-end">Importe</th><th>Estado</th>
+                                    <th style="text-align:center;">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaPro"></tbody>
+                        </table>
+                    </div>
+                    <div class="pagination pagination-productos">
+                        <div class="pagination-total" id="pageinfoPro">Total registros 0</div>
+                        <div class="pagination-buttons pagination-buttons-productos">
+                            <button type="button" id="proPrimero" class="pagination-nav"><i class="fa-solid fa-angles-left"></i></button>
+                            <button type="button" id="proAnterior" class="pagination-nav"><i class="fa-solid fa-angle-left"></i></button>
+                            <div id="proPages" class="pagination-pages"></div>
+                            <button type="button" id="proSiguiente" class="pagination-nav"><i class="fa-solid fa-angle-right"></i></button>
+                            <button type="button" id="proUltimo" class="pagination-nav"><i class="fa-solid fa-angles-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===================== CHEQUES DE TERCEROS ===================== -->
+                <div id="tab-terceros" class="tab-content">
+                    <div class="table-header">
+                        <div class="d-flex align-items-center gap-2">
+                            <h3>Cheques de Terceros</h3>
+                            <div class="info-note">
+                                <button type="button" class="info-note-button" aria-label="Ciclo de un cheque de tercero: cartera, depósito, acreditación y endoso">
+                                    <i class="fa-solid fa-circle-info"></i>
+                                </button>
+                                <div class="info-note-tooltip" style="width: 460px;">
+                                    <span class="info-note-bullet">*</span>
+                                    Son cartera: recibir un cheque de tercero NO afecta ninguna cuenta bancaria. Queda "en cartera" hasta que lo depositás o endosás.
+                                    <br><br>
+                                    <span class="info-note-bullet">*</span>
+                                    Depositar: lo presentás al banco y genera el ingreso en el libro (tipo DCT). El banco todavía no confirmó los fondos, así que el cheque aún puede rebotar (rechazarse).
+                                    <br><br>
+                                    <span class="info-note-bullet">*</span>
+                                    Acreditar: el banco confirma que el cheque se cobró y los fondos son firmes. No agrega otro movimiento (el ingreso ya entró al depositar); solo consolida la operación.
+                                    <br><br>
+                                    <span class="info-note-bullet">*</span>
+                                    Endosar: transferís el cheque a un tercero (p. ej. un proveedor). No pasa por ninguna cuenta, así que nunca genera movimiento bancario.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-header-actions">
+                            <select id="filtroEstadoTer" class="form-select input-estilizado" style="min-width:150px;">
+                                <option value="">Todos los estados</option>
+                                <option value="CARTERA">En cartera</option>
+                                <option value="DEPOSITADO">Depositado</option>
+                                <option value="ACREDITADO">Acreditado</option>
+                                <option value="ENDOSADO">Endosado</option>
+                                <option value="RECHAZADO">Rechazado</option>
+                                <option value="DEVUELTO">Devuelto</option>
+                            </select>
+                            <input type="text" class="form-control input-estilizado" placeholder="Buscar por Nº, librador o cliente..." autocomplete="off" id="searchTer" style="min-width:280px;">
+                            <button type="button" class="btn-primary" id="btnRecibir" style="white-space:nowrap;"><i class="fa-solid fa-plus"></i> Registrar Cheque</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr class="sm">
+                                    <th>Nº</th><th>Banco</th><th>Librador</th><th>Pago</th>
+                                    <th class="text-end">Importe</th><th>Estado</th>
+                                    <th style="text-align:center;">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaTer"></tbody>
+                        </table>
+                    </div>
+                    <div class="pagination pagination-productos">
+                        <div class="pagination-total" id="pageinfoTer">Total registros 0</div>
+                        <div class="pagination-buttons pagination-buttons-productos">
+                            <button type="button" id="terPrimero" class="pagination-nav"><i class="fa-solid fa-angles-left"></i></button>
+                            <button type="button" id="terAnterior" class="pagination-nav"><i class="fa-solid fa-angle-left"></i></button>
+                            <div id="terPages" class="pagination-pages"></div>
+                            <button type="button" id="terSiguiente" class="pagination-nav"><i class="fa-solid fa-angle-right"></i></button>
+                            <button type="button" id="terUltimo" class="pagination-nav"><i class="fa-solid fa-angles-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===================== TALONARIOS ===================== -->
+                <div id="tab-talonarios" class="tab-content">
+                    <div class="table-header">
+                        <h3>Talonarios (Chequeras)</h3>
+                        <div class="table-header-actions">
+                            <input type="text" class="form-control input-estilizado" placeholder="Buscar por serie, cuenta o banco..." autocomplete="off" id="searchChq" style="min-width:280px;">
+                            <button type="button" class="btn-primary" id="btnNuevaChq" style="white-space:nowrap;"><i class="fa-solid fa-plus"></i> Nuevo Talonario</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr class="sm">
+                                    <th>Cuenta</th><th>Serie</th><th>Rango</th><th>Próximo</th><th>Disponibles</th><th>Estado</th>
+                                    <th style="text-align:center;">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaChq"></tbody>
+                        </table>
+                    </div>
+                    <div class="pagination pagination-productos">
+                        <div class="pagination-total" id="pageinfoChq">Total registros 0</div>
+                        <div class="pagination-buttons pagination-buttons-productos">
+                            <button type="button" id="chqPrimero" class="pagination-nav"><i class="fa-solid fa-angles-left"></i></button>
+                            <button type="button" id="chqAnterior" class="pagination-nav"><i class="fa-solid fa-angle-left"></i></button>
+                            <div id="chqPages" class="pagination-pages"></div>
+                            <button type="button" id="chqSiguiente" class="pagination-nav"><i class="fa-solid fa-angle-right"></i></button>
+                            <button type="button" id="chqUltimo" class="pagination-nav"><i class="fa-solid fa-angles-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================== MODAL EMITIR CHEQUE PROPIO ===================== -->
+        <div id="proModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-header-title"><h2 id="proModalTitle" class="tituloform">Emitir Cheque</h2></div>
+                    <button type="button" id="proClose" class="modal-close">×</button>
+                </div>
+                <div class="modal-body">
+                    <form id="proForm">
+                        <div class="row g-3 mb-2">
+                            <div class="col-8"><label for="chpchqid">Talonario *</label>
+                                <select id="chpchqid" class="form-select input-estilizado" data-required="true"><option value="">Seleccionar...</option></select>
+                            </div>
+                            <div class="col-4"><label for="chpimporte">Importe *</label><input type="text" id="chpimporte" class="form-control input-estilizado" data-importe placeholder="0" autocomplete="off" data-required="true"></div>
+                        </div>
+                        <div class="row g-3 mb-2">
+                            <div class="col-4"><label for="chpfecemi">Fecha emisión *</label><input type="date" id="chpfecemi" class="form-control input-estilizado" data-required="true"></div>
+                            <div class="col-4"><label for="chpfecpago">Fecha de pago</label><input type="date" id="chpfecpago" class="form-control input-estilizado" disabled></div>
+                            <div class="col-4 d-flex align-items-end"><label class="mb-2"><input type="checkbox" id="chpdiferido"> Diferido</label></div>
+                        </div>
+                        <div class="row g-3 mb-2">
+                            <div class="col-8"><label for="chpbenefic">Beneficiario *</label><input type="text" id="chpbenefic" class="form-control input-estilizado" maxlength="255" autocomplete="off" data-required="true"></div>
+                            <div class="col-4"><label for="chpbeneruc">RUC beneficiario</label><input type="text" id="chpbeneruc" class="form-control input-estilizado" maxlength="11" autocomplete="off"></div>
+                        </div>
+                        <div class="row g-3 mb-2">
+                            <div class="col-12"><label for="chpconcepto">Concepto *</label><input type="text" id="chpconcepto" class="form-control input-estilizado" maxlength="255" autocomplete="off" data-required="true"></div>
+                        </div>
+                        <div class="row g-3 mb-2">
+                            <div class="col-4 d-flex align-items-center"><label class="mb-0"><input type="checkbox" id="chpalaorden" checked> A la orden</label></div>
+                            <div class="col-4 d-flex align-items-center"><label class="mb-0"><input type="checkbox" id="chpcruzado"> Cruzado</label></div>
+                        </div>
+                        <div class="row g-3 mb-2">
+                            <div class="col-12"><label for="chpobserva">Observaciones</label><input type="text" id="chpobserva" class="form-control input-estilizado" autocomplete="off"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="proCancel" class="btn btn-secondary">Cancelar</button>
+                    <button type="button" id="proGuardar" class="btn btn-primary">Emitir</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================== MODAL RECIBIR CHEQUE TERCERO ===================== -->
+        <div id="terModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-header-title"><h2 id="terModalTitle" class="tituloform">Registrar Cheque de Tercero</h2></div>
+                    <button type="button" id="terClose" class="modal-close">×</button>
+                </div>
+                <div class="modal-body">
+                    <form id="terForm">
+                        <div class="row g-3 mb-2">
+                            <div class="col-6"><label for="chtbanid">Banco girado *</label>
+                                <select id="chtbanid" class="form-select input-estilizado" data-required="true"><option value="">Seleccionar...</option></select>
+                            </div>
+                            <div class="col-3"><label for="chtnumero">Nº cheque *</label><input type="text" id="chtnumero" class="form-control input-estilizado" maxlength="20" autocomplete="off" data-required="true"></div>
+                            <div class="col-3"><label for="chtcuenta">Cuenta librador</label><input type="text" id="chtcuenta" class="form-control input-estilizado" maxlength="30" autocomplete="off"></div>
+                        </div>
+                        <div class="row g-3 mb-2">
+                            <div class="col-8"><label for="chtlibrador">Librador *</label><input type="text" id="chtlibrador" class="form-control input-estilizado" maxlength="255" autocomplete="off" data-required="true"></div>
+                            <div class="col-4"><label for="chtlibruc">RUC librador</label><input type="text" id="chtlibruc" class="form-control input-estilizado" maxlength="11" autocomplete="off"></div>
+                        </div>
+                        <div class="row g-3 mb-2">
+                            <div class="col-3"><label for="chtmoneda">Moneda *</label>
+                                <select id="chtmoneda" class="form-select input-estilizado" data-required="true"><option value="">...</option></select>
+                            </div>
+                            <div class="col-3"><label for="chtimporte">Importe *</label><input type="text" id="chtimporte" class="form-control input-estilizado" data-importe placeholder="0" autocomplete="off" data-required="true"></div>
+                            <div class="col-6"><label for="chtcliid">Cliente (opcional)</label>
+                                <select id="chtcliid" class="form-select input-estilizado"><option value="">(ninguno)</option></select>
+                            </div>
+                        </div>
+                        <div class="row g-3 mb-2">
+                            <div class="col-4"><label for="chtfecemi">Fecha emisión *</label><input type="date" id="chtfecemi" class="form-control input-estilizado" data-required="true"></div>
+                            <div class="col-4"><label for="chtfecrec">Fecha recepción *</label><input type="date" id="chtfecrec" class="form-control input-estilizado" data-required="true"></div>
+                            <div class="col-4 d-flex align-items-end"><label class="mb-2"><input type="checkbox" id="chtdiferido"> Diferido</label></div>
+                        </div>
+                        <div class="row g-3 mb-2">
+                            <div class="col-4"><label for="chtfecpago">Fecha de pago</label><input type="date" id="chtfecpago" class="form-control input-estilizado" disabled></div>
+                            <div class="col-4"><label for="chtrefint">Ref. interna</label><input type="text" id="chtrefint" class="form-control input-estilizado" maxlength="50" autocomplete="off"></div>
+                            <div class="col-4"><label for="chtobserva">Observaciones</label><input type="text" id="chtobserva" class="form-control input-estilizado" autocomplete="off"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="terCancel" class="btn btn-secondary">Cancelar</button>
+                    <button type="button" id="terGuardar" class="btn btn-primary">Registrar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================== MODAL TALONARIO (CHEQUERA) ===================== -->
+        <div id="chqModal" class="modal">
+            <div class="modal-content" style="max-width:560px;">
+                <div class="modal-header">
+                    <div class="modal-header-title"><h2 id="chqModalTitle" class="tituloform">Nuevo Talonario</h2></div>
+                    <button type="button" id="chqClose" class="modal-close">×</button>
+                </div>
+                <div class="modal-body">
+                    <form id="chqForm">
+                        <div class="row g-3 mb-2">
+                            <div class="col-8"><label for="chqcbaid">Cuenta *</label>
+                                <select id="chqcbaid" class="form-select input-estilizado" data-required="true"><option value="">Seleccionar...</option></select>
+                            </div>
+                            <div class="col-4"><label for="chqserie">Serie</label><input type="text" id="chqserie" class="form-control input-estilizado" maxlength="10" autocomplete="off"></div>
+                        </div>
+                        <div class="row g-3 mb-2">
+                            <div class="col-4"><label for="chqdesde">Desde *</label><input type="number" id="chqdesde" class="form-control input-estilizado" min="1" autocomplete="off" data-required="true"></div>
+                            <div class="col-4"><label for="chqhasta">Hasta *</label><input type="number" id="chqhasta" class="form-control input-estilizado" min="1" autocomplete="off" data-required="true"></div>
+                            <div class="col-4"><label for="chqfecrec">Fecha recepción *</label><input type="date" id="chqfecrec" class="form-control input-estilizado" data-required="true"></div>
+                        </div>
+                        <div class="row g-3 mb-2" id="chqActualRow" style="display:none;">
+                            <div class="col-12"><small class="text-muted">Próximo número a emitir: <span id="chqActualTxt" style="font-weight:600;">—</span></small></div>
+                        </div>
+                        <div class="row g-3 mb-2">
+                            <div class="col-8"><label for="chqobserva">Observaciones</label><input type="text" id="chqobserva" class="form-control input-estilizado" autocomplete="off"></div>
+                            <div class="col-4 d-flex align-items-end" id="chqActivoRow" style="display:none;"><label class="mb-2"><input type="checkbox" id="chqactivo" checked> Activo</label></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="chqCancel" class="btn btn-secondary">Cancelar</button>
+                    <button type="button" id="chqGuardar" class="btn btn-primary">Guardar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================== MODAL ACCIÓN (estados) ===================== -->
+        <div id="accModal" class="modal">
+            <div class="modal-content" style="max-width:480px;">
+                <div class="modal-header">
+                    <div class="modal-header-title"><h2 id="accTitle" class="tituloform">Acción</h2></div>
+                    <button type="button" id="accClose" class="modal-close">×</button>
+                </div>
+                <div class="modal-body">
+                    <p id="accDesc" style="color:#555;"></p>
+                    <form id="accForm">
+                        <div class="row g-3 mb-2" id="accFechaRow">
+                            <div class="col-12"><label for="accFecha">Fecha</label><input type="date" id="accFecha" class="form-control input-estilizado"></div>
+                        </div>
+                        <div class="row g-3 mb-2" id="accCuentaRow" style="display:none;">
+                            <div class="col-12"><label for="accCuenta">Cuenta de depósito *</label>
+                                <select id="accCuenta" class="form-select input-estilizado"><option value="">Seleccionar...</option></select>
+                            </div>
+                        </div>
+                        <div class="row g-3 mb-2" id="accRefRow" style="display:none;">
+                            <div class="col-12"><label for="accRef">Referencia (boleta) *</label><input type="text" id="accRef" class="form-control input-estilizado" maxlength="50" autocomplete="off"></div>
+                        </div>
+                        <div class="row g-3 mb-2" id="accEndosadoRow" style="display:none;">
+                            <div class="col-12"><label for="accEndosado">Endosar a *</label><input type="text" id="accEndosado" class="form-control input-estilizado" maxlength="255" autocomplete="off"></div>
+                        </div>
+                        <div class="row g-3 mb-2" id="accMotivoRow" style="display:none;">
+                            <div class="col-12"><label for="accMotivo">Motivo *</label><input type="text" id="accMotivo" class="form-control input-estilizado" maxlength="255" autocomplete="off"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="accCancel" class="btn btn-secondary">Cancelar</button>
+                    <button type="button" id="accConfirmar" class="btn btn-primary">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="./cheques.js"></script>
+</body>
+</html>

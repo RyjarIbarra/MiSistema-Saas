@@ -87,12 +87,103 @@ export const getByIdDocumento = `${documento}getById`;
 export const InsertDocumento = `${documento}insert`;
 export const anularDocumento = `${documento}anular`;
 
+// --- Módulo de Bancos ---
+const banco = `banco/`;
+export const listBanco = `${banco}list`;
+export const getByIdBanco = `${banco}getById`;
+export const InsertBanco = `${banco}insert`;
+export const UpdateBanco = `${banco}update`;
+export const DeleteBanco = `${banco}delete`;
+
+const cuentaBancaria = `cuenta-bancaria/`;
+export const listCuentaBancaria = `${cuentaBancaria}list`;
+export const getByIdCuentaBancaria = `${cuentaBancaria}getById`;
+export const InsertCuentaBancaria = `${cuentaBancaria}insert`;
+export const UpdateCuentaBancaria = `${cuentaBancaria}update`;
+export const DeleteCuentaBancaria = `${cuentaBancaria}delete`;
+
+const tipoMovimiento = `tipo-movimiento/`;
+export const listTipoMovimiento = `${tipoMovimiento}list`;
+export const getByCodigoTipoMovimiento = `${tipoMovimiento}getByCodigo`;
+export const InsertTipoMovimiento = `${tipoMovimiento}insert`;
+export const UpdateTipoMovimiento = `${tipoMovimiento}update`;
+export const DeleteTipoMovimiento = `${tipoMovimiento}delete`;
+
+const movimientoBancario = `movimiento-bancario/`;
+export const listMovimiento = `${movimientoBancario}list`;
+export const registrarMovimiento = `${movimientoBancario}registrar`;
+export const anularMovimiento = `${movimientoBancario}anular`;
+export const saldoCuenta = `${movimientoBancario}saldo`;
+
+const chequera = `chequera/`;
+export const listChequera = `${chequera}list`;
+export const getByIdChequera = `${chequera}getById`;
+export const InsertChequera = `${chequera}insert`;
+export const UpdateChequera = `${chequera}update`;
+export const DeleteChequera = `${chequera}delete`;
+
+const chequePropio = `cheque-propio/`;
+export const listChequePropio = `${chequePropio}list`;
+export const getByIdChequePropio = `${chequePropio}getById`;
+export const emitirChequePropio = `${chequePropio}emitir`;
+export const entregarChequePropio = `${chequePropio}entregar`;
+export const cobrarChequePropio = `${chequePropio}cobrar`;
+export const rechazarChequePropio = `${chequePropio}rechazar`;
+export const anularChequePropio = `${chequePropio}anular`;
+
+const extracto = `extracto/`;
+export const listExtracto = `${extracto}list`;
+export const getByIdExtracto = `${extracto}getById`;
+export const InsertExtracto = `${extracto}insert`;
+export const cerrarExtracto = `${extracto}cerrar`;
+export const DeleteExtracto = `${extracto}delete`;
+export const listPartidas = `${extracto}partidas`;
+export const addPartida = `${extracto}partida`;
+export const addPartidasBulk = `${extracto}partidas/bulk`;
+export const deletePartida = `${extracto}partida`;
+export const ignorarPartida = `${extracto}partida/ignorar`;
+export const plantillaPartidas = `${extracto}partidas/plantilla`;
+export const importarPartidas = `${extracto}partidas/importar`;
+
+const conciliacion = `conciliacion/`;
+export const reporteConciliacion = `${conciliacion}reporte`;
+export const movimientosConciliar = `${conciliacion}movimientos`;
+export const listVinculos = `${conciliacion}vinculos`;
+export const vincularConciliacion = `${conciliacion}vincular`;
+export const desvincularConciliacion = `${conciliacion}desvincular`;
+export const autoMatchConciliacion = `${conciliacion}auto`;
+
+const chequeTercero = `cheque-tercero/`;
+export const listChequeTercero = `${chequeTercero}list`;
+export const getByIdChequeTercero = `${chequeTercero}getById`;
+export const recibirChequeTercero = `${chequeTercero}recibir`;
+export const depositarChequeTercero = `${chequeTercero}depositar`;
+export const acreditarChequeTercero = `${chequeTercero}acreditar`;
+export const endosarChequeTercero = `${chequeTercero}endosar`;
+export const rechazarChequeTercero = `${chequeTercero}rechazar`;
+export const devolverChequeTercero = `${chequeTercero}devolver`;
+
+const ordenPago = `orden-pago/`;
+export const listOrdenPago = `${ordenPago}list`;
+export const getByIdOrdenPago = `${ordenPago}getById`;
+export const crearOrdenPago = `${ordenPago}crear`;
+export const actualizarOrdenPago = `${ordenPago}actualizar`;
+export const aprobarOrdenPago = `${ordenPago}aprobar`;
+export const anularOrdenPago = `${ordenPago}anular`;
+export const eliminarOrdenPago = `${ordenPago}eliminar`;
+export const agregarMedioOrdenPago = `${ordenPago}medio`;
+export const quitarMedioOrdenPago = `${ordenPago}medio`;
+export const pagarOrdenPago = `${ordenPago}pagar`;
+
 const clienteReportes = `cliente/report/`;
 export const reporteClientePdf = `${clienteReportes}pdf`;
 
 const productoReportes = `producto/report/`;
 export const reporteProductoGeneralPdf = `${productoReportes}general/pdf`;
 export const reporteProductoDetallePdf = `${productoReportes}detalle/pdf`;
+
+const documentoReportes = `documento/report/`;
+export const kudePdf = `${documentoReportes}kude`; // KuDE (representación gráfica) de un documento
 export const reporteProductoPreciosPdf = `${productoReportes}precios/pdf`;
 export const reporteProductoStockPdf = `${productoReportes}stock/pdf`;
 
