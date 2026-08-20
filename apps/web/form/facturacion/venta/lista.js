@@ -1,5 +1,5 @@
-import { listDocumento } from "../../../js/apiEndpoints.js";
-import { postData } from "../../../js/apiService.js";
+import { listDocumento, kudePdf } from "../../../js/apiEndpoints.js";
+import { postData, postBinaryData } from "../../../js/apiService.js";
 import { Enter, calcularFilasVisibles, formatearFecha, importeFormato } from "../../../js/utilidades.js";
 
 const $ = (id) => document.getElementById(id);
@@ -29,7 +29,7 @@ function normalizarTexto(valor) {
 function estadoVacio() {
     return `
         <tr>
-            <td colspan="9">
+            <td colspan="10">
                 <div class="empty-state">
                     <i class="fa-solid fa-file-invoice"></i>
                     <h3>No se encontraron facturas</h3>
@@ -75,6 +75,13 @@ function renderTable(data) {
             <td data-label="Moneda">${factura.moneda || "PYG"}</td>
             <td data-label="Total" class="text-end">${importeFormato(factura.total || 0, factura.moneda || "PYG")}</td>
             <td data-label="Estado">${estadoTexto(factura.estado)}</td>
+            <td data-label="Acciones">
+                <div class="action-buttons">
+                    <button type="button" class="btn-icon btn-kude" data-docid="${factura.docid}" title="Imprimir KuDE">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-principal)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-printer"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>
+                    </button>
+                </div>
+            </td>
         `;
         tbody.appendChild(fila);
     });
@@ -226,9 +233,33 @@ function navegarNuevaFactura() {
     window.location.href = "./venta.html";
 }
 
+async function imprimirKude(docid) {
+    if (!docid) return;
+    try {
+        const { blob } = await postBinaryData(
+            kudePdf,
+            { docid: Number(docid) },
+            `kude_${docid}.pdf`,
+            "KuDE"
+        );
+        const url = URL.createObjectURL(blob);
+        window.open(url, "_blank"); // abre el PDF en otra pestaña para ver/imprimir
+        setTimeout(() => URL.revokeObjectURL(url), 60000);
+    } catch (error) {
+        console.error("Error al generar el KuDE:", error);
+    }
+}
+
 let searchTimeout = null;
 
 function bindEvents() {
+    $("tablaFacturas").addEventListener("click", (event) => {
+        const btn = event.target.closest(".btn-kude");
+        if (btn) {
+            void imprimirKude(btn.dataset.docid);
+        }
+    });
+
     $("searchInput").addEventListener("input", () => {
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(async () => {

@@ -16,6 +16,8 @@ services:
       timeout: 5s
       retries: 5
     restart: unless-stopped
+    # default -> api/reports/web de este compose ; saas-net -> FacturAdmin (otro compose)
+    networks: [default, saas-net]
 
   # ---- Postgres de CLIENTES: bases de los tenants ----
   db-clientes:
@@ -34,6 +36,8 @@ services:
       timeout: 5s
       retries: 5
     restart: unless-stopped
+    # default -> api/reports/web de este compose ; saas-net -> FacturAdmin (otro compose)
+    networks: [default, saas-net]
 
   # ---- Backend principal ----
   api:
@@ -88,3 +92,8 @@ services:
 volumes:
   dbadmin:
   dbclientes:
+
+networks:
+  default:
+  saas-net:
+    external: true           # red compartida con FacturAdmin. Crear una vez: docker network create saas-net

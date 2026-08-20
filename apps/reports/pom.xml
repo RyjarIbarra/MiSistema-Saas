@@ -65,6 +65,17 @@
 			<artifactId>jasperreports-jdt</artifactId>
 			<version>7.0.6</version>
 		</dependency>
+		<!-- Componentes de Jasper (incluye el componente QRCode) + ZXing (motor que genera el QR). -->
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports-barcode4j</artifactId>
+			<version>7.0.6</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.zxing</groupId>
+			<artifactId>core</artifactId>
+			<version>3.5.3</version>
+		</dependency>
 
 		<!-- JWT (misma versión que MiSistema para que los tokens decodifiquen igual) -->
 		<dependency>

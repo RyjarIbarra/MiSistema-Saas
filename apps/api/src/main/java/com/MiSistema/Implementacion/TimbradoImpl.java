@@ -79,6 +79,9 @@ public class TimbradoImpl implements TimbradoService {
             stmt.setString(7, timbrado.getTimpunexp());
             stmt.setObject(8, timbrado.getTimnrodesde());
             stmt.setObject(9, timbrado.getTimnrohasta());
+            // El nº actual debe cumplir la constraint timbrado_rango. El front manda null (=0) en
+            // modalidad E; se arranca en 1 (E) o en timnrodesde (preimpreso/autoimpresor).
+            timbrado.setTimnroactual(numeroActualValido(timbrado, timbrado.getTimnroactual()));
             stmt.setInt(10, timbrado.getTimnroactual());
             stmt.execute();
 
@@ -112,7 +115,17 @@ public class TimbradoImpl implements TimbradoService {
             stmt.setString(7, timbrado.getTimpunexp());
             stmt.setObject(8, timbrado.getTimnrodesde());
             stmt.setObject(9, timbrado.getTimnrohasta());
-            stmt.setInt(10, timbrado.getTimnroactual());
+            // Al editar metadatos no reiniciamos la secuencia: si no llega un nº actual válido
+            // (el front manda null en modalidad E), se conserva el que ya tiene el timbrado.
+            int nroActual = timbrado.getTimnroactual();
+            if (nroActual < 1) {
+                Integer existente = numeroActualExistente(conn, timbrado.getTimid());
+                nroActual = (existente != null && existente >= 1)
+                        ? existente
+                        : numeroActualValido(timbrado, 0);
+            }
+            timbrado.setTimnroactual(nroActual);
+            stmt.setInt(10, nroActual);
             stmt.setLong(11, timbrado.getTimid());
             stmt.execute();
 
@@ -167,5 +180,29 @@ public class TimbradoImpl implements TimbradoService {
         t.setTimfecvto(timfecvto != null ? timfecvto.toLocalDate() : null);
         t.setTimactivo(rs.getBoolean("timactivo"));
         return t;
+    }
+
+    /**
+     * Devuelve un timnroactual que respeta la constraint timbrado_rango cuando el valor
+     * propuesto no es válido (&lt; 1). Electrónico (E): arranca en 1 (rango 1..9.999.999).
+     * Preimpreso/autoimpresor: arranca en timnrodesde.
+     */
+    private static int numeroActualValido(Timbrado t, int propuesto) {
+        if (propuesto >= 1) return propuesto;
+        String modalidad = t.getTimmodalid() != null ? t.getTimmodalid() : "P";
+        if ("E".equals(modalidad)) return 1;
+        return t.getTimnrodesde() != null ? t.getTimnrodesde() : 1;
+    }
+
+    /** Lee el timnroactual que ya tiene el timbrado (para no reiniciarlo al editar). */
+    private static Integer numeroActualExistente(Connection conn, long timid) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement(
+                "SELECT timnroactual FROM public.timbrado WHERE timid = ?")) {
+            ps.setLong(1, timid);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return (Integer) rs.getObject("timnroactual");
+            }
+        }
+        return null;
     }
 }

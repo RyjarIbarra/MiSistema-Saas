@@ -52,7 +52,16 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://127.0.0.1:5502", "http://192.168.100.52:3000", "http://192.168.100.52:5502"));
+        // setAllowedOriginPatterns (no setAllowedOrigins) permite comodines junto con allowCredentials.
+        // Cubre Docker/nginx (localhost sin puerto y con puerto) y Live Server (localhost/127.0.0.1:55xx).
+        // En produccion agregar aca el dominio real (ej. "https://tudominio.com").
+        configuration.setAllowedOriginPatterns(List.of(
+                "http://localhost",
+                "http://localhost:*",
+                "http://127.0.0.1",
+                "http://127.0.0.1:*",
+                "http://192.168.100.52:*"
+        ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

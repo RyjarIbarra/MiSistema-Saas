@@ -1,0 +1,172 @@
+<!-- KuDE - Representación Gráfica del Documento Electrónico (SIFEN Paraguay) -->
+<jasperReport name="kude" language="java" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<!-- Emisor -->
+	<parameter name="emiRazon" class="java.lang.String"/>
+	<parameter name="emiRuc" class="java.lang.String"/>
+	<parameter name="emiDir" class="java.lang.String"/>
+	<parameter name="emiTel" class="java.lang.String"/>
+	<parameter name="emiMail" class="java.lang.String"/>
+	<parameter name="ambiente" class="java.lang.String"/>
+	<!-- Timbrado -->
+	<parameter name="timNro" class="java.lang.String"/>
+	<parameter name="timIni" class="java.lang.String"/>
+	<!-- Documento -->
+	<parameter name="docTipo" class="java.lang.String"/>
+	<parameter name="docNro" class="java.lang.String"/>
+	<parameter name="docFecEmi" class="java.lang.String"/>
+	<parameter name="docCondVta" class="java.lang.String"/>
+	<parameter name="docMoneda" class="java.lang.String"/>
+	<parameter name="docEstado" class="java.lang.String"/>
+	<!-- Receptor -->
+	<parameter name="recRazon" class="java.lang.String"/>
+	<parameter name="recRuc" class="java.lang.String"/>
+	<parameter name="recDir" class="java.lang.String"/>
+	<!-- Totales -->
+	<parameter name="exentas" class="java.math.BigDecimal"/>
+	<parameter name="gravada5" class="java.math.BigDecimal"/>
+	<parameter name="iva5" class="java.math.BigDecimal"/>
+	<parameter name="gravada10" class="java.math.BigDecimal"/>
+	<parameter name="iva10" class="java.math.BigDecimal"/>
+	<parameter name="totIva" class="java.math.BigDecimal"/>
+	<parameter name="totDesc" class="java.math.BigDecimal"/>
+	<parameter name="total" class="java.math.BigDecimal"/>
+	<parameter name="totalLetras" class="java.lang.String"/>
+	<!-- SIFEN -->
+	<parameter name="cdc" class="java.lang.String"/>
+	<parameter name="qr" class="java.lang.String"/>
+	<parameter name="sifenEstado" class="java.lang.String"/>
+
+	<field name="dodorden" class="java.lang.Integer"/>
+	<field name="dodcodigo" class="java.lang.String"/>
+	<field name="doddescri" class="java.lang.String"/>
+	<field name="dodcantidad" class="java.math.BigDecimal"/>
+	<field name="dodpreuni" class="java.math.BigDecimal"/>
+	<field name="doddescuni" class="java.math.BigDecimal"/>
+	<field name="dodtasaiva" class="java.lang.Integer"/>
+	<field name="dodsubtotal" class="java.math.BigDecimal"/>
+
+	<title height="195">
+		<!-- Caja emisor -->
+		<element kind="rectangle" x="0" y="0" width="335" height="90"/>
+		<element kind="textField" x="5" y="4" width="325" height="18" fontSize="11.0" bold="true" blankWhenNull="true">
+			<expression><![CDATA[$P{emiRazon}]]></expression>
+		</element>
+		<element kind="textField" x="5" y="24" width="325" height="12" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA["RUC: " + $P{emiRuc}]]></expression>
+		</element>
+		<element kind="textField" x="5" y="38" width="325" height="12" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA["Dirección: " + $P{emiDir}]]></expression>
+		</element>
+		<element kind="textField" x="5" y="52" width="325" height="12" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA["Teléfono: " + $P{emiTel}]]></expression>
+		</element>
+		<element kind="textField" x="5" y="66" width="325" height="12" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA["Email: " + $P{emiMail}]]></expression>
+		</element>
+		<!-- Caja documento -->
+		<element kind="rectangle" x="345" y="0" width="210" height="90"/>
+		<element kind="textField" x="350" y="6" width="200" height="12" fontSize="8.0" hTextAlign="Center" blankWhenNull="true">
+			<expression><![CDATA["RUC " + $P{emiRuc}]]></expression>
+		</element>
+		<element kind="textField" x="350" y="18" width="200" height="12" fontSize="8.0" hTextAlign="Center" blankWhenNull="true">
+			<expression><![CDATA["Timbrado N° " + $P{timNro}]]></expression>
+		</element>
+		<element kind="textField" x="350" y="30" width="200" height="10" fontSize="7.0" hTextAlign="Center" blankWhenNull="true">
+			<expression><![CDATA["Inicio vigencia: " + $P{timIni}]]></expression>
+		</element>
+		<element kind="textField" x="350" y="46" width="200" height="16" fontSize="10.0" bold="true" hTextAlign="Center" blankWhenNull="true">
+			<expression><![CDATA[$P{docTipo}]]></expression>
+		</element>
+		<element kind="textField" x="350" y="64" width="200" height="18" fontSize="13.0" bold="true" hTextAlign="Center" blankWhenNull="true">
+			<expression><![CDATA[$P{docNro}]]></expression>
+		</element>
+		<!-- Título KuDE -->
+		<element kind="staticText" x="0" y="96" width="555" height="14" fontSize="9.0" bold="true" hTextAlign="Center">
+			<text><![CDATA[KuDE - Representación Gráfica del Documento Electrónico]]></text>
+		</element>
+		<element kind="textField" x="0" y="110" width="555" height="12" fontSize="8.0" bold="true" forecolor="#CC0000" hTextAlign="Center" blankWhenNull="true">
+			<expression><![CDATA[$P{ambiente}]]></expression>
+		</element>
+		<!-- Datos del documento -->
+		<element kind="textField" x="0" y="126" width="555" height="14" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA["Fecha de emisión: " + $P{docFecEmi} + "        Condición de venta: " + $P{docCondVta} + "        Moneda: " + $P{docMoneda}]]></expression>
+		</element>
+		<!-- Caja receptor -->
+		<element kind="rectangle" x="0" y="144" width="555" height="46"/>
+		<element kind="staticText" x="5" y="146" width="200" height="10" fontSize="7.0" bold="true">
+			<text><![CDATA[RECEPTOR]]></text>
+		</element>
+		<element kind="textField" x="5" y="158" width="400" height="12" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA["Nombre / Razón social: " + $P{recRazon}]]></expression>
+		</element>
+		<element kind="textField" x="410" y="158" width="140" height="12" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA["RUC / CI: " + $P{recRuc}]]></expression>
+		</element>
+		<element kind="textField" x="5" y="172" width="545" height="12" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA["Dirección: " + $P{recDir}]]></expression>
+		</element>
+	</title>
+
+	<columnHeader height="20">
+		<element kind="line" x="0" y="0" width="555" height="1"/>
+		<element kind="staticText" x="0" y="3" width="55" height="14" fontSize="8.0" bold="true"><text><![CDATA[Código]]></text></element>
+		<element kind="staticText" x="55" y="3" width="230" height="14" fontSize="8.0" bold="true"><text><![CDATA[Descripción]]></text></element>
+		<element kind="staticText" x="285" y="3" width="45" height="14" fontSize="8.0" bold="true" hTextAlign="Right"><text><![CDATA[Cant.]]></text></element>
+		<element kind="staticText" x="330" y="3" width="70" height="14" fontSize="8.0" bold="true" hTextAlign="Right"><text><![CDATA[P. Unit.]]></text></element>
+		<element kind="staticText" x="400" y="3" width="55" height="14" fontSize="8.0" bold="true" hTextAlign="Right"><text><![CDATA[Desc.]]></text></element>
+		<element kind="staticText" x="455" y="3" width="35" height="14" fontSize="8.0" bold="true" hTextAlign="Right"><text><![CDATA[IVA]]></text></element>
+		<element kind="staticText" x="490" y="3" width="65" height="14" fontSize="8.0" bold="true" hTextAlign="Right"><text><![CDATA[Subtotal]]></text></element>
+		<element kind="line" x="0" y="19" width="555" height="1"/>
+	</columnHeader>
+
+	<detail>
+		<band height="15">
+			<element kind="textField" x="0" y="1" width="55" height="13" fontSize="7.0" blankWhenNull="true"><expression><![CDATA[$F{dodcodigo}]]></expression></element>
+			<element kind="textField" x="55" y="1" width="230" height="13" fontSize="7.0" blankWhenNull="true"><expression><![CDATA[$F{doddescri}]]></expression></element>
+			<element kind="textField" x="285" y="1" width="45" height="13" fontSize="7.0" hTextAlign="Right" pattern="#,##0.##" blankWhenNull="true"><expression><![CDATA[$F{dodcantidad}]]></expression></element>
+			<element kind="textField" x="330" y="1" width="70" height="13" fontSize="7.0" hTextAlign="Right" pattern="#,##0" blankWhenNull="true"><expression><![CDATA[$F{dodpreuni}]]></expression></element>
+			<element kind="textField" x="400" y="1" width="55" height="13" fontSize="7.0" hTextAlign="Right" pattern="#,##0" blankWhenNull="true"><expression><![CDATA[$F{doddescuni}]]></expression></element>
+			<element kind="textField" x="455" y="1" width="35" height="13" fontSize="7.0" hTextAlign="Right" blankWhenNull="true"><expression><![CDATA[$F{dodtasaiva} == null ? "" : $F{dodtasaiva} + "%"]]></expression></element>
+			<element kind="textField" x="490" y="1" width="65" height="13" fontSize="7.0" hTextAlign="Right" pattern="#,##0" blankWhenNull="true"><expression><![CDATA[$F{dodsubtotal}]]></expression></element>
+		</band>
+	</detail>
+
+	<summary height="230">
+		<element kind="line" x="0" y="0" width="555" height="1"/>
+		<!-- Liquidación de IVA (izquierda) -->
+		<element kind="staticText" x="0" y="6" width="270" height="12" fontSize="8.0" bold="true"><text><![CDATA[LIQUIDACIÓN DE IVA]]></text></element>
+		<element kind="staticText" x="0" y="20" width="120" height="12" fontSize="8.0"><text><![CDATA[IVA 5%:]]></text></element>
+		<element kind="textField" x="120" y="20" width="150" height="12" fontSize="8.0" hTextAlign="Right" pattern="#,##0" blankWhenNull="true"><expression><![CDATA[$P{iva5}]]></expression></element>
+		<element kind="staticText" x="0" y="32" width="120" height="12" fontSize="8.0"><text><![CDATA[IVA 10%:]]></text></element>
+		<element kind="textField" x="120" y="32" width="150" height="12" fontSize="8.0" hTextAlign="Right" pattern="#,##0" blankWhenNull="true"><expression><![CDATA[$P{iva10}]]></expression></element>
+		<element kind="staticText" x="0" y="44" width="120" height="12" fontSize="8.0" bold="true"><text><![CDATA[Total IVA:]]></text></element>
+		<element kind="textField" x="120" y="44" width="150" height="12" fontSize="8.0" bold="true" hTextAlign="Right" pattern="#,##0" blankWhenNull="true"><expression><![CDATA[$P{totIva}]]></expression></element>
+		<!-- Totales (derecha) -->
+		<element kind="staticText" x="300" y="6" width="150" height="12" fontSize="8.0" hTextAlign="Right"><text><![CDATA[Subtotal exentas:]]></text></element>
+		<element kind="textField" x="450" y="6" width="105" height="12" fontSize="8.0" hTextAlign="Right" pattern="#,##0" blankWhenNull="true"><expression><![CDATA[$P{exentas}]]></expression></element>
+		<element kind="staticText" x="300" y="18" width="150" height="12" fontSize="8.0" hTextAlign="Right"><text><![CDATA[Subtotal gravado 5%:]]></text></element>
+		<element kind="textField" x="450" y="18" width="105" height="12" fontSize="8.0" hTextAlign="Right" pattern="#,##0" blankWhenNull="true"><expression><![CDATA[$P{gravada5}]]></expression></element>
+		<element kind="staticText" x="300" y="30" width="150" height="12" fontSize="8.0" hTextAlign="Right"><text><![CDATA[Subtotal gravado 10%:]]></text></element>
+		<element kind="textField" x="450" y="30" width="105" height="12" fontSize="8.0" hTextAlign="Right" pattern="#,##0" blankWhenNull="true"><expression><![CDATA[$P{gravada10}]]></expression></element>
+		<element kind="staticText" x="300" y="42" width="150" height="12" fontSize="8.0" hTextAlign="Right"><text><![CDATA[Descuento total:]]></text></element>
+		<element kind="textField" x="450" y="42" width="105" height="12" fontSize="8.0" hTextAlign="Right" pattern="#,##0" blankWhenNull="true"><expression><![CDATA[$P{totDesc}]]></expression></element>
+		<element kind="line" x="300" y="56" width="255" height="1"/>
+		<element kind="staticText" x="300" y="58" width="150" height="16" fontSize="10.0" bold="true" hTextAlign="Right"><text><![CDATA[TOTAL A PAGAR:]]></text></element>
+		<element kind="textField" x="450" y="58" width="105" height="16" fontSize="10.0" bold="true" hTextAlign="Right" pattern="#,##0" blankWhenNull="true"><expression><![CDATA[$P{total}]]></expression></element>
+		<!-- Total en letras -->
+		<element kind="rectangle" x="0" y="80" width="555" height="22"/>
+		<element kind="textField" x="5" y="83" width="545" height="16" fontSize="8.0" italic="true" blankWhenNull="true"><expression><![CDATA["Son: " + $P{totalLetras}]]></expression></element>
+		<!-- QR (imagen, generado por ZXing). Solo se dibuja si hay dato de QR. -->
+		<element kind="component" x="0" y="110" width="90" height="90">
+			<printWhenExpression><![CDATA[$P{qr} != null && !$P{qr}.isBlank()]]></printWhenExpression>
+			<component kind="barcode4j:QRCode" errorCorrectionLevel="M" margin="0">
+				<codeExpression><![CDATA[$P{qr}]]></codeExpression>
+			</component>
+		</element>
+		<!-- CDC / SIFEN -->
+		<element kind="staticText" x="100" y="110" width="35" height="12" fontSize="8.0" bold="true"><text><![CDATA[CDC:]]></text></element>
+		<element kind="textField" x="135" y="110" width="420" height="24" fontSize="8.0" blankWhenNull="true"><expression><![CDATA[$P{cdc}]]></expression></element>
+		<element kind="textField" x="100" y="142" width="455" height="24" fontSize="7.0"><expression><![CDATA["Consulte la validez de este documento con el CDC en:\nhttps://ekuatia.set.gov.py/consultas/"]]></expression></element>
+		<element kind="staticText" x="0" y="205" width="555" height="20" fontSize="7.0" italic="true" hTextAlign="Center"><text><![CDATA[Representación gráfica (KuDE) de un Documento Electrónico. No sustituye al XML aprobado por la SET (SIFEN), que es el documento tributario válido.]]></text></element>
+	</summary>
+</jasperReport>
